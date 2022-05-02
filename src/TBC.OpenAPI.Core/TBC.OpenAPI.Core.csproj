@@ -1,0 +1,71 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFrameworks>netstandard2.0;net6.0</TargetFrameworks>
+		<LangVersion>latest</LangVersion>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<IsPackable>true</IsPackable>
+		<PackageId>TBC.OpenAPI.Core</PackageId>
+		<Title>TBC Bank Open API SDK Core</Title>
+		<Copyright>TBC Bank</Copyright>
+		<PackageTags>Open API;SDK;TBC</PackageTags>
+		<Company>TBC Bank</Company>
+		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageIcon>icon.png</PackageIcon>
+		<PackageProjectUrl>https://tfssrv.hq.tbc/DefaultCollection/Open%20API/_git/TBC.OpenAPI.ExchangeRates.Temp</PackageProjectUrl>
+		<RepositoryUrl>https://tfssrv.hq.tbc/DefaultCollection/Open%20API/_git/TBC.OpenAPI.ExchangeRates.Temp</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<RepositoryBranch>master</RepositoryBranch>
+		<IncludeContentInPack>true</IncludeContentInPack>
+		<PublishRepositoryUrl>true</PublishRepositoryUrl>
+		<EmbedUntrackedSources>true</EmbedUntrackedSources>
+		<DebugType>embedded</DebugType>
+		<EnableNETAnalyzers>true</EnableNETAnalyzers>
+		<AnalysisLevel>latest-all</AnalysisLevel>
+	</PropertyGroup>
+
+	<PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<NoWarn>1701;1702;1591</NoWarn>
+		<WarningsAsErrors>NU1605</WarningsAsErrors>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="System.Text.Json" Version="6.0.3" />
+		<PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="6.0.0">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="MinVer" Version="3.1.0" Condition=" '$(Configuration)' == 'Release' ">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+	</ItemGroup>
+
+	<PropertyGroup Condition=" '$(GITHUB_ACTIONS)' == 'true' ">
+		<ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+		<Deterministic>true</Deterministic>
+	</PropertyGroup>
+
+	<ItemGroup Label="SourceLink">
+		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" Condition=" '$(Configuration)|$(GITHUB_ACTIONS)' == 'Release|true' ">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+	</ItemGroup>
+
+	<Target Name="CalculateAssemblyVersions" AfterTargets="MinVer">
+		<PropertyGroup>
+			<AssemblyVersion>$(MinVerMajor).$(MinVerMinor).$(MinVerPatch).0</AssemblyVersion>
+			<InformationalVersion Condition=" '$(GITHUB_ACTIONS)' == 'true' ">$(MinVerVersion)</InformationalVersion>
+		</PropertyGroup>
+	</Target>
+
+	<ItemGroup>
+		<None Include="..\..\images\icon.png" Pack="true" PackagePath="\" />
+	</ItemGroup>
+
+</Project>
