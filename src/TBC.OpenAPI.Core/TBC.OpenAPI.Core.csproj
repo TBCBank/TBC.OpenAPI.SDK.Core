@@ -7,14 +7,15 @@
 		<Nullable>enable</Nullable>
 		<IsPackable>true</IsPackable>
 		<PackageId>TBC.OpenAPI.Core</PackageId>
-		<Title>TBC Bank Open API SDK Core</Title>
+		<Title>TBC Open API Core</Title>
+		<Description>Core functionality for TBC Open API SDKs</Description>
 		<Copyright>TBC Bank</Copyright>
-		<PackageTags>Open API;SDK;TBC</PackageTags>
+		<PackageTags>OpenAPI;SDK;TBC</PackageTags>
 		<Company>TBC Bank</Company>
 		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageIcon>icon.png</PackageIcon>
-		<PackageProjectUrl>https://github.com/TBCBank/TBC.OpenAPI.Core</PackageProjectUrl>
+		<PackageProjectUrl>https://developers.tbcbank.ge</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/TBCBank/TBC.OpenAPI.Core</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
 		<RepositoryBranch>master</RepositoryBranch>
