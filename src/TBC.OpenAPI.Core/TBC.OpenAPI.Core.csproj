@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<TargetFrameworks>netstandard2.0;net6.0</TargetFrameworks>
@@ -14,8 +14,8 @@
 		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageIcon>icon.png</PackageIcon>
-		<PackageProjectUrl>https://tfssrv.hq.tbc/DefaultCollection/Open%20API/_git/TBC.OpenAPI.ExchangeRates.Temp</PackageProjectUrl>
-		<RepositoryUrl>https://tfssrv.hq.tbc/DefaultCollection/Open%20API/_git/TBC.OpenAPI.ExchangeRates.Temp</RepositoryUrl>
+		<PackageProjectUrl>https://github.com/TBCBank/TBC.OpenAPI.Core</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/TBCBank/TBC.OpenAPI.Core</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
 		<RepositoryBranch>master</RepositoryBranch>
 		<IncludeContentInPack>true</IncludeContentInPack>
