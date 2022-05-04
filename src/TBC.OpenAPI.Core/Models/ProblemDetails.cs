@@ -10,6 +10,8 @@ namespace TBC.OpenAPI.Core.Models
     {
         public const string MessageDeserializationErrorCode = "MessageDeserializationError";
         public const string MessageDeserializationErrorTitle = "Unable to deserialize response message";
+        public const string HttpRequestSendErrorCode = "HttpRequestSendError";
+        public const string HttpRequestSendErrorTitle = "Error occurred while sending HTTP request message";
 
         /// <summary>
         /// A URI reference [RFC3986] that identifies the problem type

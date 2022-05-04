@@ -1,31 +1,26 @@
 ﻿using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using TBC.OpenAPI.Core.Extensions;
 using TBC.OpenAPI.Core.Models;
 
 namespace TBC.OpenAPI.Core
 {
-    public class HttpHelper
+    public class HttpHelper<TClient>
+        where TClient : class, IOpenApiClient
     {
         private static readonly JsonSerializerOptions DefaultJsonSerializerOptions = new JsonSerializerOptions(JsonSerializerDefaults.Web)
         {
             DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
         };
 
-        private readonly HttpClient _httpClient;
+        private readonly IHttpClientFactory _httpClientFactory;
         private readonly JsonSerializerOptions _jsonSerializerOptions;
 
-        public HttpHelper(HttpClient httpClient) : this(httpClient, DefaultJsonSerializerOptions)
+        public HttpHelper(IHttpClientFactory httpClientFactory)
         {
-        }
-
-        public HttpHelper(HttpClient httpClient, JsonSerializerOptions jsonSerializerOptions)
-        {
-            if (httpClient.BaseAddress == null)
-                throw new ArgumentNullException(nameof(httpClient.BaseAddress));
-
-            _httpClient = httpClient;
-            _jsonSerializerOptions = jsonSerializerOptions;
+            _httpClientFactory = httpClientFactory;
+            _jsonSerializerOptions = DefaultJsonSerializerOptions;
         }
 
         #region Get
@@ -38,9 +33,9 @@ namespace TBC.OpenAPI.Core
 
         public async Task<ApiResponse<TResponseData>> GetJsonAsync<TResponseData>(string path, QueryParamCollection? query = null, HeaderParamCollection? headers = null, CancellationToken cancellationToken = default)
         {
-            using var requestMessage = CreateRequestMessage(HttpMethod.Get, path, query, headers);
-            var response = await _httpClient.SendAsync(requestMessage, cancellationToken).ConfigureAwait(false);
-            return await DeserializeResponse<TResponseData>(response).ConfigureAwait(false);
+            var httpClient = GetHttpClient();
+            var requestMessage = CreateRequestMessage(httpClient, HttpMethod.Get, path, query, headers);
+            return await SendRequestMessage<TResponseData>(httpClient, requestMessage, cancellationToken).ConfigureAwait(false);
         }
 
         #endregion
@@ -55,11 +50,11 @@ namespace TBC.OpenAPI.Core
 
         public async Task<ApiResponse<TResponseData>> PostJsonAsync<TRequestData, TResponseData>(string path, TRequestData data, QueryParamCollection? query = null, HeaderParamCollection? headers = null, CancellationToken cancellationToken = default)
         {
-            using var requestMessage = CreateRequestMessage(HttpMethod.Post, path, query, headers);
+            var httpClient = GetHttpClient();
+            var requestMessage = CreateRequestMessage(httpClient, HttpMethod.Post, path, query, headers);
             var json = JsonSerializer.Serialize(data, _jsonSerializerOptions);
             requestMessage.Content = new StringContent(json, Encoding.UTF8, "application/json");
-            var response = await _httpClient.SendAsync(requestMessage, cancellationToken).ConfigureAwait(false);
-            return await DeserializeResponse<TResponseData>(response).ConfigureAwait(false);
+            return await SendRequestMessage<TResponseData>(httpClient, requestMessage, cancellationToken).ConfigureAwait(false);
         }
 
 
@@ -71,11 +66,11 @@ namespace TBC.OpenAPI.Core
 
         public async Task<ApiResponseBase> PostJsonAsync<TRequestData>(string path, TRequestData data, QueryParamCollection? query = null, HeaderParamCollection? headers = null, CancellationToken cancellationToken = default)
         {
-            using var requestMessage = CreateRequestMessage(HttpMethod.Post, path, query, headers);
+            var httpClient = GetHttpClient();
+            var requestMessage = CreateRequestMessage(httpClient, HttpMethod.Post, path, query, headers);
             var json = JsonSerializer.Serialize(data, _jsonSerializerOptions);
             requestMessage.Content = new StringContent(json, Encoding.UTF8, "application/json");
-            var response = await _httpClient.SendAsync(requestMessage, cancellationToken).ConfigureAwait(false);
-            return await DeserializeResponse(response).ConfigureAwait(false);
+            return await SendRequestMessage(httpClient, requestMessage, cancellationToken).ConfigureAwait(false);
         }
 
         #endregion
@@ -90,11 +85,11 @@ namespace TBC.OpenAPI.Core
 
         public async Task<ApiResponse<TResponseData>> PutJsonAsync<TRequestData, TResponseData>(string path, TRequestData data, QueryParamCollection? query = null, HeaderParamCollection? headers = null, CancellationToken cancellationToken = default)
         {
-            using var requestMessage = CreateRequestMessage(HttpMethod.Put, path, query, headers);
+            var httpClient = GetHttpClient();
+            var requestMessage = CreateRequestMessage(httpClient, HttpMethod.Put, path, query, headers);
             var json = JsonSerializer.Serialize(data, _jsonSerializerOptions);
             requestMessage.Content = new StringContent(json, Encoding.UTF8, "application/json");
-            var response = await _httpClient.SendAsync(requestMessage, cancellationToken).ConfigureAwait(false);
-            return await DeserializeResponse<TResponseData>(response).ConfigureAwait(false);
+            return await SendRequestMessage<TResponseData>(httpClient, requestMessage, cancellationToken).ConfigureAwait(false);
         }
 
 
@@ -106,55 +101,82 @@ namespace TBC.OpenAPI.Core
 
         public async Task<ApiResponseBase> PutJsonAsync<TRequestData>(string path, TRequestData data, QueryParamCollection? query = null, HeaderParamCollection? headers = null, CancellationToken cancellationToken = default)
         {
-            using var requestMessage = CreateRequestMessage(HttpMethod.Post, path, query, headers);
+            var httpClient = GetHttpClient();
+            var requestMessage = CreateRequestMessage(httpClient, HttpMethod.Post, path, query, headers);
             var json = JsonSerializer.Serialize(data, _jsonSerializerOptions);
             requestMessage.Content = new StringContent(json, Encoding.UTF8, "application/json");
-            var response = await _httpClient.SendAsync(requestMessage, cancellationToken).ConfigureAwait(false);
-            return await DeserializeResponse(response).ConfigureAwait(false);
+            return await SendRequestMessage(httpClient, requestMessage, cancellationToken).ConfigureAwait(false);
         }
 
         #endregion
 
+        private HttpClient GetHttpClient() => _httpClientFactory.CreateOpenApiClient<TClient>();
 
-        private HttpRequestMessage CreateRequestMessage(HttpMethod method, string path, QueryParamCollection? query = null, HeaderParamCollection? headers = null)
+        private HttpRequestMessage CreateRequestMessage(HttpClient httpClient, HttpMethod method, string path, QueryParamCollection? query = null, HeaderParamCollection? headers = null)
         {
-            var requestMessage = new HttpRequestMessage(method, GetUri(path, query));
+            var requestMessage = new HttpRequestMessage(method, GetUri(httpClient, path, query));
             if (headers != null)
                 headers.ApplyHeaders(requestMessage.Headers);
 
             return requestMessage;
         }
 
-        private Uri GetUri(string path, QueryParamCollection? query = null)
+        private Uri GetUri(HttpClient httpClient, string path, QueryParamCollection? query = null)
         {
-            var builder = new UriBuilder(new Uri(_httpClient.BaseAddress!, path));
-            if(query != null)
+            var builder = new UriBuilder(httpClient.BaseAddress!);
+            builder.Path = $"{builder.Path.TrimEnd('/')}/{path.TrimStart('/')}";
+            if (query != null)
                 builder.Query = query.ToQueryString();
 
             return builder.Uri;
         }
 
-        private async Task<ApiResponse<TData>> DeserializeResponse<TData>(HttpResponseMessage response)
+        private async Task<ApiResponse<TData>> SendRequestMessage<TData>(HttpClient httpClient, HttpRequestMessage requestMessage, CancellationToken cancellationToken)
         {
             var result = new ApiResponse<TData>();
-            var responseMessage = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-            result.Headers = response.Headers.Any() ? response.Headers.ToDictionary(x => x.Key, y => y.Value) : default;
+
+            HttpResponseMessage response;
+#pragma warning disable CA1031 // Do not catch general exception types
             try
             {
-                if (response.IsSuccessStatusCode)
-                {
-                    result.IsSuccess = true;
-                    result.Data = !string.IsNullOrEmpty(responseMessage) ? JsonSerializer.Deserialize<TData>(responseMessage, _jsonSerializerOptions) : default;
-                }
-                else
-                {
-                    result.IsSuccess = false;
-                    result.Problem = !string.IsNullOrEmpty(responseMessage) ? JsonSerializer.Deserialize<ProblemDetails>(responseMessage, _jsonSerializerOptions) : default;
-                }
+                response = await httpClient.SendAsync(requestMessage, cancellationToken).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
                 result.IsSuccess = false;
+                result.Problem = new ProblemDetails
+                {
+                    Type = ProblemDetails.HttpRequestSendErrorCode,
+                    Code = ProblemDetails.HttpRequestSendErrorCode,
+                    Title = ProblemDetails.HttpRequestSendErrorTitle
+                };
+                result.Exception = ex;
+                return result;
+            }
+#pragma warning restore CA1031 // Do not catch general exception types
+
+            result.IsSuccess = response.IsSuccessStatusCode;
+            result.Headers = response.Headers.Any() ? response.Headers.ToDictionary(x => x.Key, y => y.Value) : default;
+
+            string? responseMessage = null;
+#pragma warning disable CA1031 // Do not catch general exception types
+            try
+            {
+                responseMessage = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                if (!string.IsNullOrEmpty(responseMessage))
+                {
+                    if (response.IsSuccessStatusCode)
+                    {
+                        result.Data = JsonSerializer.Deserialize<TData>(responseMessage, _jsonSerializerOptions);
+                    }
+                    else
+                    {
+                        result.Problem = JsonSerializer.Deserialize<ProblemDetails>(responseMessage, _jsonSerializerOptions);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
                 result.Problem = new ProblemDetails
                 {
                     Type = ProblemDetails.MessageDeserializationErrorCode,
@@ -165,29 +187,52 @@ namespace TBC.OpenAPI.Core
                 };
                 result.Exception = ex;
             }
+#pragma warning restore CA1031 // Do not catch general exception types
             return result;
         }
 
-        private async Task<ApiResponseBase> DeserializeResponse(HttpResponseMessage response)
+        private async Task<ApiResponseBase> SendRequestMessage(HttpClient httpClient, HttpRequestMessage requestMessage, CancellationToken cancellationToken)
         {
             var result = new ApiResponseBase();
-            var responseMessage = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-            result.Headers = response.Headers.Any() ? response.Headers.ToDictionary(x => x.Key, y => y.Value) : default;
+
+            HttpResponseMessage response;
+#pragma warning disable CA1031 // Do not catch general exception types
             try
             {
-                if (response.IsSuccessStatusCode)
-                {
-                    result.IsSuccess = true;
-                }
-                else
-                {
-                    result.IsSuccess = false;
-                    result.Problem = !string.IsNullOrEmpty(responseMessage) ? JsonSerializer.Deserialize<ProblemDetails>(responseMessage, _jsonSerializerOptions) : default;
-                }
+                response = await httpClient.SendAsync(requestMessage, cancellationToken).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
                 result.IsSuccess = false;
+                result.Problem = new ProblemDetails
+                {
+                    Type = ProblemDetails.HttpRequestSendErrorCode,
+                    Code = ProblemDetails.HttpRequestSendErrorCode,
+                    Title = ProblemDetails.HttpRequestSendErrorTitle
+                };
+                result.Exception = ex;
+                return result;
+            }
+#pragma warning restore CA1031 // Do not catch general exception types
+
+            result.IsSuccess = response.IsSuccessStatusCode;
+            result.Headers = response.Headers.Any() ? response.Headers.ToDictionary(x => x.Key, y => y.Value) : default;
+
+            string? responseMessage = null;
+#pragma warning disable CA1031 // Do not catch general exception types
+            try
+            {
+                if (response.IsSuccessStatusCode)
+                {
+                    responseMessage = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    if (!string.IsNullOrEmpty(responseMessage))
+                    {
+                        result.Problem = JsonSerializer.Deserialize<ProblemDetails>(responseMessage, _jsonSerializerOptions);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
                 result.Problem = new ProblemDetails
                 {
                     Type = ProblemDetails.MessageDeserializationErrorCode,
@@ -198,6 +243,7 @@ namespace TBC.OpenAPI.Core
                 };
                 result.Exception = ex;
             }
+#pragma warning restore CA1031 // Do not catch general exception types
             return result;
         }
     }

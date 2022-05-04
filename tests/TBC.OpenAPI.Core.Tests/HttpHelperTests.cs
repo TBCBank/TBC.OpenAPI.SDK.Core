@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using FluentAssertions.Execution;
+using Moq;
 using TBC.OpenAPI.Core.Tests.Models;
 using Xunit;
 
@@ -13,10 +15,12 @@ namespace TBC.OpenAPI.Core.Tests
 {
     public class HttpHelperTests : IClassFixture<HttpHelperMocks>
     {
-        private readonly HttpHelper _http; 
+        private readonly HttpHelper<TestClient> _http; 
         public HttpHelperTests(HttpHelperMocks mocks)
         {
-            _http = new HttpHelper(mocks.HttpClient);
+            var mock = new Mock<IHttpClientFactory>();
+            mock.Setup(x => x.CreateClient(typeof(TestClient).FullName)).Returns(mocks.HttpClient);
+            _http = new HttpHelper<TestClient>(mock.Object);
         }
 
         [Fact]

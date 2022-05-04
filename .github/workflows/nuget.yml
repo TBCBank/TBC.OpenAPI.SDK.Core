@@ -57,3 +57,6 @@ jobs:
 
     - name: Push TBC.OpenAPI.Core
       run: nuget push "src\TBC.OpenAPI.Core\bin\Release\*.nupkg" -NonInteractive -SkipDuplicate -Source "https://api.nuget.org/v3/index.json" -NoSymbols -ForceEnglishOutput
+
+    - name: Push TBC.OpenAPI.ExampleClient
+      run: nuget push "examples\TBC.OpenAPI.ExampleClient\bin\Release\*.nupkg" -NonInteractive -SkipDuplicate -Source "https://api.nuget.org/v3/index.json" -NoSymbols -ForceEnglishOutput

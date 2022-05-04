@@ -16,15 +16,19 @@ namespace TBC.OpenAPI.Core.Models
 
 		public override string ToString() => Value ?? string.Empty;
 
+#pragma warning disable CA2225 // Operator overloads have named alternates
+
 		public static implicit operator ParamValue(bool value) => new(value ? "true" : "false");
 
 		public static implicit operator ParamValue(bool? value) => new(value.HasValue ? value.Value ? "true" : "false" : null);
 
         public static implicit operator ParamValue(byte value) => new(value.ToString(CultureInfo.InvariantCulture));
 
-		public static implicit operator ParamValue(byte? value) => new(value?.ToString(CultureInfo.InvariantCulture));
 
-		public static implicit operator ParamValue(sbyte value) => new(value.ToString(CultureInfo.InvariantCulture));
+        public static implicit operator ParamValue(byte? value) => new(value?.ToString(CultureInfo.InvariantCulture));
+
+
+        public static implicit operator ParamValue(sbyte value) => new(value.ToString(CultureInfo.InvariantCulture));
 
 		public static implicit operator ParamValue(sbyte? value) => new(value?.ToString(CultureInfo.InvariantCulture));
 
@@ -104,6 +108,8 @@ namespace TBC.OpenAPI.Core.Models
 		public static implicit operator ParamValue(List<Enum>? value) => new(value?.ConvertAll(a => (ParamValue)a));
 
 		public static implicit operator ParamValue(Dictionary<string, string> value) => new(GetKeyValueString(value));
+
+#pragma warning restore CA2225 // Operator overloads have named alternates
 
 		private static string GetKeyValueString(Dictionary<string, string> dictionary) =>
 			string.Join("&", dictionary.Select(o => $"{o.Key}={o.Value}"));

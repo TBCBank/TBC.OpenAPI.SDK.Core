@@ -1,4 +1,5 @@
-﻿using System.Web;
+﻿using System.Collections.Specialized;
+using System.Net;
 
 namespace TBC.OpenAPI.Core.Models
 {
@@ -6,7 +7,7 @@ namespace TBC.OpenAPI.Core.Models
     {
         public string ToQueryString()
         {
-            var query = HttpUtility.ParseQueryString(string.Empty);
+            var query = new NameValueCollection();
 
             foreach (var item in this)
             {
@@ -25,7 +26,13 @@ namespace TBC.OpenAPI.Core.Models
                 }
             }
 
-            return query.ToString() ?? string.Empty;
+            if (!query.HasKeys())
+                return string.Empty;
+
+            var segments = query.AllKeys.SelectMany(key => query.GetValues(key),
+                (key, value) => $"{WebUtility.UrlEncode(key)}={WebUtility.UrlEncode(value)}");
+
+            return "?" + string.Join("&", segments);
         }
     }
 }
