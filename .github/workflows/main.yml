@@ -43,6 +43,9 @@ jobs:
         dotnet-version: 6.0.x
         include-prerelease: false
 
+    - name: Remove net framework example project
+      run: dotnet sln remove "examples\UsageExample3\UsageExample3.csproj"
+
     - name: Restore
       run: dotnet restore -p:Configuration=Release
 

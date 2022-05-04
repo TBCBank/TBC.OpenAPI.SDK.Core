@@ -45,6 +45,9 @@ jobs:
         nuget-version: latest
         nuget-api-key-source: 'https://api.nuget.org/v3/index.json'
 
+    - name: Remove net framework example project
+      run: dotnet sln remove "examples\UsageExample3\UsageExample3.csproj"
+
     - name: Restore
       run: dotnet restore -p:Configuration=Release
 
