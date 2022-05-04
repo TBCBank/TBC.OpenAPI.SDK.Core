@@ -161,11 +161,11 @@
       <Private>True</Private>
       <HintPath>..\..\packages\Antlr.3.5.0.2\lib\Antlr3.Runtime.dll</HintPath>
     </Reference>
-    <Reference Include="TBC.OpenAPI.Core, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\TBC.OpenAPI.Core.0.0.0-alpha.0.4\lib\netstandard2.0\TBC.OpenAPI.Core.dll</HintPath>
+    <Reference Include="TBC.OpenAPI.Core, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\TBC.OpenAPI.Core.1.0.0-pre3\lib\netstandard2.0\TBC.OpenAPI.Core.dll</HintPath>
     </Reference>
-    <Reference Include="TBC.OpenAPI.ExampleClient, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\TBC.OpenAPI.ExampleClient.0.0.0-alpha.0.4\lib\netstandard2.0\TBC.OpenAPI.ExampleClient.dll</HintPath>
+    <Reference Include="TBC.OpenAPI.ExampleClient, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\TBC.OpenAPI.ExampleClient.1.0.0-pre3\lib\netstandard2.0\TBC.OpenAPI.ExampleClient.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
