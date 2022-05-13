@@ -1,5 +1,5 @@
-using TBC.OpenAPI.ExampleClient;
-using TBC.OpenAPI.ExampleClient.Extensions;
+using TBC.OpenAPI.SDK.ExampleClient;
+using TBC.OpenAPI.SDK.ExampleClient.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 

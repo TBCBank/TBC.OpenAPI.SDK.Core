@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using TBC.OpenAPI.ExampleClient;
-using TBC.OpenAPI.ExampleClient.Models;
+using TBC.OpenAPI.SDK.ExampleClient;
+using TBC.OpenAPI.SDK.ExampleClient.Models;
 
 namespace UsageExample1.Controllers
 {

@@ -1,0 +1,85 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31919.166
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{F068D92C-EC84-452F-BF81-BD548EAE5BAF}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{D93C5C4E-65C3-4AE2-98B7-51BBDA578C3A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{F4D7D578-F4DD-4499-8D0B-73C6ACB7B619}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{3807C069-7C09-4A60-800F-53EF1C67570C}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\codeql-analysis.yml = .github\workflows\codeql-analysis.yml
+		.github\workflows\dependency-review.yml = .github\workflows\dependency-review.yml
+		.github\workflows\main.yml = .github\workflows\main.yml
+		.github\workflows\nuget.yml = .github\workflows\nuget.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{AECC49E6-46F0-446A-ADC2-7B7B5BC36153}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "examples", "examples", "{322E62F9-79CE-40D6-A7D2-AC2375CF4C18}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UsageExample1", "examples\UsageExample1\UsageExample1.csproj", "{9C5D4751-574B-4FE8-B549-35852C377202}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UsageExample2", "examples\UsageExample2\UsageExample2.csproj", "{2CFA0011-C676-4163-ABCD-203203FBF2BB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UsageExample3", "examples\UsageExample3\UsageExample3.csproj", "{76062995-4DE6-4DBB-88A0-B181FE38878D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TBC.OpenAPI.SDK.Core", "src\TBC.OpenAPI.SDK.Core\TBC.OpenAPI.SDK.Core.csproj", "{E3DAC414-1447-4297-B9B5-EA8E14DF4DD5}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TBC.OpenAPI.SDK.Core.Tests", "tests\TBC.OpenAPI.SDK.Core.Tests\TBC.OpenAPI.SDK.Core.Tests.csproj", "{FD836F18-B715-4EF2-B41B-BECB4F0B6913}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TBC.OpenAPI.SDK.ExampleClient", "examples\TBC.OpenAPI.SDK.ExampleClient\TBC.OpenAPI.SDK.ExampleClient.csproj", "{4781CB51-82B2-4C81-8DD3-F0B8D43D4B01}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9C5D4751-574B-4FE8-B549-35852C377202}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9C5D4751-574B-4FE8-B549-35852C377202}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9C5D4751-574B-4FE8-B549-35852C377202}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9C5D4751-574B-4FE8-B549-35852C377202}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2CFA0011-C676-4163-ABCD-203203FBF2BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2CFA0011-C676-4163-ABCD-203203FBF2BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2CFA0011-C676-4163-ABCD-203203FBF2BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2CFA0011-C676-4163-ABCD-203203FBF2BB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{76062995-4DE6-4DBB-88A0-B181FE38878D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{76062995-4DE6-4DBB-88A0-B181FE38878D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{76062995-4DE6-4DBB-88A0-B181FE38878D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{76062995-4DE6-4DBB-88A0-B181FE38878D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E3DAC414-1447-4297-B9B5-EA8E14DF4DD5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E3DAC414-1447-4297-B9B5-EA8E14DF4DD5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E3DAC414-1447-4297-B9B5-EA8E14DF4DD5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E3DAC414-1447-4297-B9B5-EA8E14DF4DD5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FD836F18-B715-4EF2-B41B-BECB4F0B6913}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FD836F18-B715-4EF2-B41B-BECB4F0B6913}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FD836F18-B715-4EF2-B41B-BECB4F0B6913}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FD836F18-B715-4EF2-B41B-BECB4F0B6913}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4781CB51-82B2-4C81-8DD3-F0B8D43D4B01}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4781CB51-82B2-4C81-8DD3-F0B8D43D4B01}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4781CB51-82B2-4C81-8DD3-F0B8D43D4B01}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4781CB51-82B2-4C81-8DD3-F0B8D43D4B01}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{3807C069-7C09-4A60-800F-53EF1C67570C} = {F4D7D578-F4DD-4499-8D0B-73C6ACB7B619}
+		{9C5D4751-574B-4FE8-B549-35852C377202} = {322E62F9-79CE-40D6-A7D2-AC2375CF4C18}
+		{2CFA0011-C676-4163-ABCD-203203FBF2BB} = {322E62F9-79CE-40D6-A7D2-AC2375CF4C18}
+		{76062995-4DE6-4DBB-88A0-B181FE38878D} = {322E62F9-79CE-40D6-A7D2-AC2375CF4C18}
+		{E3DAC414-1447-4297-B9B5-EA8E14DF4DD5} = {D93C5C4E-65C3-4AE2-98B7-51BBDA578C3A}
+		{FD836F18-B715-4EF2-B41B-BECB4F0B6913} = {F068D92C-EC84-452F-BF81-BD548EAE5BAF}
+		{4781CB51-82B2-4C81-8DD3-F0B8D43D4B01} = {322E62F9-79CE-40D6-A7D2-AC2375CF4C18}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {6EA70694-3D75-4295-9BE5-B779CA933036}
+	EndGlobalSection
+EndGlobal

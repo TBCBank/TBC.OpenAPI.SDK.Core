@@ -58,8 +58,8 @@ jobs:
       run: | 
         dotnet test -c Release --no-restore --no-build --verbosity normal
 
-    - name: Push TBC.OpenAPI.Core
-      run: nuget push "src\TBC.OpenAPI.Core\bin\Release\*.nupkg" -NonInteractive -SkipDuplicate -Source "https://api.nuget.org/v3/index.json" -NoSymbols -ForceEnglishOutput
+    - name: Push TBC.OpenAPI.SDK.Core
+      run: nuget push "src\TBC.OpenAPI.SDK.Core\bin\Release\*.nupkg" -NonInteractive -SkipDuplicate -Source "https://api.nuget.org/v3/index.json" -NoSymbols -ForceEnglishOutput
 
-    - name: Push TBC.OpenAPI.ExampleClient
-      run: nuget push "examples\TBC.OpenAPI.ExampleClient\bin\Release\*.nupkg" -NonInteractive -SkipDuplicate -Source "https://api.nuget.org/v3/index.json" -NoSymbols -ForceEnglishOutput
+    - name: Push TBC.OpenAPI.SDK.ExampleClient
+      run: nuget push "examples\TBC.OpenAPI.SDK.ExampleClient\bin\Release\*.nupkg" -NonInteractive -SkipDuplicate -Source "https://api.nuget.org/v3/index.json" -NoSymbols -ForceEnglishOutput

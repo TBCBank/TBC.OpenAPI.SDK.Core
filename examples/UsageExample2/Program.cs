@@ -1,8 +1,8 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
-using TBC.OpenAPI.Core;
-using TBC.OpenAPI.ExampleClient;
-using TBC.OpenAPI.ExampleClient.Extensions;
+using TBC.OpenAPI.SDK.Core;
+using TBC.OpenAPI.SDK.ExampleClient;
+using TBC.OpenAPI.SDK.ExampleClient.Extensions;
 
 var factory = new OpenApiClientFactoryBuilder()
     .AddExampleClient(new ExampleClientOptions
