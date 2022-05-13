@@ -8,6 +8,7 @@ on:
       - 'images/**'
       - 'docs/**'
       - 'examples/**'
+      - 'packages/**'
       - 'README.md'
     tags:
       - '**'
