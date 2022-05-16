@@ -7,17 +7,17 @@ namespace TBC.OpenAPI.SDK.Core.Models
     {
         public string ToQueryString()
         {
-            var query = new NameValueCollection();
+             var query = new NameValueCollection();
 
             foreach (var item in this)
             {
                 var value = item.Value;
-                if (value.Value is not null)
+                if (value?.Value is not null)
                 {
                     query.Add(item.Key, value.ToString());
                 }
                 else
-                if (value.Values is not null)
+                if (value?.Values is not null)
                 {
                     foreach (var v in value.Values)
                     {
