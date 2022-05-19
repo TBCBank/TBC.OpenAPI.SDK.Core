@@ -1,97 +1,63 @@
-﻿# TBC.OpenAPI.Core  
-[![NuGet version (TBC.OpenAPI.Core)](https://img.shields.io/nuget/v/TBC.OpenAPI.Core.svg?label=TBC.OpenAPI.Core)](https://www.nuget.org/packages/TBC.OpenAPI.Core/) [![CI](https://github.com/TBCBank/TBC.OpenAPI.Core/actions/workflows/main.yml/badge.svg?branch=master)](https://github.com/TBCBank/TBC.OpenAPI.Core/actions/workflows/main.yml)  
+﻿# TBC.OpenAPI.SDK.Core  
+[![NuGet version (TBC.OpenAPI.SDK.Core)](https://img.shields.io/nuget/v/TBC.OpenAPI.SDK.Core.svg?label=TBC.OpenAPI.SDK.Core)](https://www.nuget.org/packages/TBC.OpenAPI.SDK.Core/) [![CI](https://github.com/TBCBank/TBC.OpenAPI.SDK.Core/actions/workflows/main.yml/badge.svg?branch=master)](https://github.com/TBCBank/TBC.OpenAPI.SDK.Core/actions/workflows/main.yml)  
 Core functionality for TBC Open API SDKs
 
 
-## HTTP გამოძახებების დამხმარე
-რეპოზიტორი [TBC.OpenAPI.Core](https://github.com/TBCBank/TBC.OpenAPI.SDK.Core) შექმნილია HTTP გამოძახებების გამარტივებისთვის.
-მისი გამოყენებით აღარ გვიწევს დიდი კოდის წერა HTTP გამოძახებებისას და გვეხმარება დროის დაზოგვაში.
-რეპოზიტორი შეიცავს ერთ ძირითად პროექტს და რამდენიმე მაგალითს.
+## CORE functionality for working with Open API SDKs
+Repository contains the basic functionality used to work with Open Api SDKs.
 
-## პროექტი TBCTBC.OpenAPI.Core
-ეს არის ბიბლიოთეკა, რომლის დახმარებით მოთხოვნის მარტივად შეგვიძლია შევქმნათ [GET](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/GET), [PUT](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/PUT), [POST](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/POST) გამოძახებები, მივიღოთ და დავამუშაოთ დაბრუნებული პასუხი.
+Library is written in the C # programming language and is compatible with .netstandard2.0 and .net6.0. Depends only on the components manufactured by Microsoft.
 
-ბიბლიოთეკა დაწერილია C#-ის პროგრამირების ენაზე და თავსებადია .netstandard2.0-სა და .net6.0-თან. დამოკიდებულია მხოლოდ კომპანია Microsoft-ის წარმოებულ კომპონენტებზე.
+## Examples of projects
+Repository contains three [example projects](https://github.com/TBCBank/TBC.OpenAPI.SDK.Core/tree/master/examples):
 
-ბიბლიოთეკა შეიცავს ორ ძირითად კლასს:
-
-* class HttpHelper - რომელშიც რეალიზებულია HTTP გამოძახებები.
-* class OpenApiClientFactory - გამოიყენება სერვის პროვაიდერის შესაქმნელად და სამართავად.
-
-## დამხმარე მეთოდები
-პროექტი შეიცავს კლასებს დამხმარე მეთოდებით:
-
-* class HeaderParamCollection - შეიცავს მეთოდს ApplyHeaders, გამოიყენება HTTP გამოძახების Header-ების დამატებისთვის.
-* class ProblemDetailsJsonConverter - შეიცავს შეცდომის დამუშავების მეთოდებს.
-* class QueryParamCollection - შეიცავს მეთოდს ToQueryString, გამოიყენება Query პარამეტრების დამატებისთვის.
-
-## გამოძახების პარამეტრები
-გამოძახების პარამეტრები უნდა გადაეცეს OpenApiClientFactoryBuilder-ის მეთოდს AddClient, OptionsBase კლასის საშუალებით.
+* UsageExample1 - .net Core API Application
+* UsageExample2 - Console Application
+* UsageExample3 - .net WebApi Application
 
 
-## მაგალითების პროექტები
-რეპოზიტორიში მოცემულია [სამი მაგალითი](https://github.com/TBCBank/TBC.OpenAPI.SDK.Core/tree/master/examples):
-* UsageExample1 - .net Core API აპლიკაცია
-გამოყენების მაგალითი:
+## Consider example of using "UsageExample1"
+
+### Add "AddExampleClient" to Program.cs file with Dependency Injection and read settings for "ExampleClientOptions" from appsettings.json file
+
+Program.cs
 ```c#
- [ApiController]
-    [Route("[controller]")]
-    public class TestController : ControllerBase
-    {
-        private readonly IExampleClient _exampleClient;
-
-        public TestController(IExampleClient exampleClient)
-        {
-            _exampleClient = exampleClient;
-        }
-
-        [HttpGet]
-        public async Task<ActionResult<SomeObject>> GetSomeObject(CancellationToken cancellationToken = default)
-        {
-            var result = await _exampleClient.GetSomeObjectAsync(cancellationToken);
-            return Ok(result);
-        }
-    }
+builder.Services.AddExampleClient(builder.Configuration.GetSection("ExampleClient").Get<ExampleClientOptions>());
+```
+appsettings.json
+```json
+{
+  "ExampleClient": {
+    "BaseUrl": "https://run.mocky.io/v3/7690b5f0-cc43-4c03-b07f-2240b4448931/",
+    "ApiKey": "abc"
+  } 
+}
 ```
 
-* UsageExample2 - კონსოლ აპლიკაცია
+#### Create variable "_exampleClient" of type "IExampleClient" in controller and initialize it using dependency injection 
 ```c#
-var factory = new OpenApiClientFactoryBuilder()
-    .AddExampleClient(new ExampleClientOptions
-    {
-        BaseUrl = "https://run.mocky.io/v3/7690b5f0-cc43-4c03-b07f-2240b4448931/",
-        ApiKey = "abc"
-    })
-    .Build();
+private readonly IExampleClient _exampleClient;
 
-
-var client = factory.GetExampleClient();
-
-var result = client.GetSomeObjectAsync().GetAwaiter().GetResult();
-
-Console.WriteLine($"Result: {result.Name}");
-
-Console.ReadLine();
+public TestController(IExampleClient exampleClient)
+{
+    _exampleClient = exampleClient;
+}
 ```
 
-* UsageExample3 - .net WebApi აპლიკაცია
+#### Call "TestController" method "GetSomeObject"
 ```c#
-public class ValuesController : ApiController
-    {
-        // GET api/values
-        public async Task<IHttpActionResult> Get()
-        {
-            var exampleClient = OpenApiClientFactory.Instance.GetExampleClient();
-
-            var result = await exampleClient.GetSomeObjectAsync();
-
-            //var result = "ok";
-
-
-            return Ok(result);
-        }
-    }
+[HttpGet]
+public async Task<ActionResult<SomeObject>> GetSomeObject(CancellationToken cancellationToken = default)
+{
+    var result = await _exampleClient.GetSomeObjectAsync(cancellationToken);
+    return Ok(result);
+}
 ```
 
-## Unit ტესტების პროექტი [TBC.OpenAPI.Core.Tests](https://github.com/TBCBank/TBC.OpenAPI.SDK.Core/tree/master/tests/TBC.OpenAPI.SDK.Core.Tests)
-TBC.OpenAPI.Core ბიბლიოთეკის ტესტირებისთვის TBC.OpenAPI.Core.Tests პროექტში წარმოდგენილია Unit ტესტები, რომლებიც უზრუნველყოფს ბიბლიოთეკისა და მასში არსებული მეთოდების მუშაობის ტესტირებას.
+#### Returned Response
+```json
+{
+  "id": 1,
+  "name": "one"
+}
+```
