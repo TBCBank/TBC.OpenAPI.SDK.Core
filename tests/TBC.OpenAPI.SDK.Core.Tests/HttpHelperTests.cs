@@ -14,7 +14,7 @@ namespace TBC.OpenAPI.SDK.Core.Tests
 {
     public class HttpHelperTests : IClassFixture<HttpHelperMocks>
     {
-        private readonly HttpHelper<TestClient> _http; 
+        private readonly IHttpHelper<TestClient> _http; 
         public HttpHelperTests(HttpHelperMocks mocks)
         {
             var mock = new Mock<IHttpClientFactory>();

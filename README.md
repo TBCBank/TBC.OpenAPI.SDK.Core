@@ -61,3 +61,33 @@ public async Task<ActionResult<SomeObject>> GetSomeObject(CancellationToken canc
   "name": "one"
 }
 ```
+
+
+## Consider example of using "UsageExample2"
+
+#### Create instance "factory" type of "OpenApiClientFactory" with "OpenApiClientFactoryBuilder", call "AddExampleClient" extension method and pass "ExampleClientOptions"
+```c#
+var factory = new OpenApiClientFactoryBuilder()
+    .AddExampleClient(new ExampleClientOptions
+    {
+        BaseUrl = "https://run.mocky.io/v3/7690b5f0-cc43-4c03-b07f-2240b4448931/",
+        ApiKey = "abc"
+    })
+    .Build();
+```
+
+#### Get Client from "factory"
+```c#
+var client = factory.GetExampleClient();
+```
+
+#### Call "GetSomeObjectAsync" and print result to console
+```c#
+var result = client.GetSomeObjectAsync().GetAwaiter().GetResult();
+Console.WriteLine($"Result: {result.Name}");
+```
+
+#### Result should be
+```text
+Result: one
+```
