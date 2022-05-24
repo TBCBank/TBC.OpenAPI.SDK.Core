@@ -8,6 +8,22 @@ Repository contains the basic functionality used to work with Open Api SDKs.
 
 Library is written in the C # programming language and is compatible with .netstandard2.0 and .net6.0. Depends only on the components manufactured by Microsoft.
 
+
+## Consider example of using "ExampleClient" for creating SDK Client 
+
+* Create interface "IExampleClient" and inherit from "TBC.OpenAPI.SDK.Core.IOpenApiClient"
+* Create class "ExampleClient" and inherit from "IExampleClient"
+* Create property ```private readonly IHttpHelper<ExampleClient> _http``` and assign it from constructor by dephendency injection
+```c#
+public ExampleClient(HttpHelper<ExampleClient> http)
+{
+    _http = http;
+}
+```
+* Create class "ExampleClientOptions" and inherit from "TBC.OpenAPI.SDK.Core.OptionsBase"
+* Create class "ServiceCollectionExtensions" with extension method "AddExampleClient" for "Microsoft.Extensions.DependencyInjection.IServiceCollection", used for add client to middleware
+* Create class "FactoryExtensions" with extension method "AddExampleClient" for "TBC.OpenAPI.SDK.Core.OpenApiClientFactoryBuilder", used for pass options "ExampleClientOptions" into "OpenApiClientFactoryBuilder"
+
 ## Examples of projects
 Repository contains three [example projects](https://github.com/TBCBank/TBC.OpenAPI.SDK.Core/tree/master/examples):
 
@@ -60,34 +76,4 @@ public async Task<ActionResult<SomeObject>> GetSomeObject(CancellationToken canc
   "id": 1,
   "name": "one"
 }
-```
-
-
-## Consider example of using "UsageExample2"
-
-#### Create instance "factory" type of "OpenApiClientFactory" with "OpenApiClientFactoryBuilder", call "AddExampleClient" extension method and pass "ExampleClientOptions"
-```c#
-var factory = new OpenApiClientFactoryBuilder()
-    .AddExampleClient(new ExampleClientOptions
-    {
-        BaseUrl = "https://run.mocky.io/v3/7690b5f0-cc43-4c03-b07f-2240b4448931/",
-        ApiKey = "abc"
-    })
-    .Build();
-```
-
-#### Get Client from "factory"
-```c#
-var client = factory.GetExampleClient();
-```
-
-#### Call "GetSomeObjectAsync" and print result to console
-```c#
-var result = client.GetSomeObjectAsync().GetAwaiter().GetResult();
-Console.WriteLine($"Result: {result.Name}");
-```
-
-#### Result should be
-```text
-Result: one
 ```
