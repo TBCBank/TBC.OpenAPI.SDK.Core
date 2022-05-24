@@ -8,8 +8,8 @@ namespace TBC.OpenAPI.SDK.Core.Models
         {
             foreach (var item in this)
             {
-                if (headers.Contains(item.Key))
-                    headers.Remove(item.Key);
+                //if (headers.Contains(item.Key))
+                //    headers.Remove(item.Key);
 
                 var value = item.Value;
                 if (value.Value is not null)
