@@ -12,7 +12,34 @@ Library is written in the C # programming language and is compatible with .netst
 ## Consider example of using "ExampleClient" for creating SDK Client 
 
 * Create interface "IExampleClient" and inherit from "TBC.OpenAPI.SDK.Core.IOpenApiClient"
+```c#
+public interface IExampleClient : IOpenApiClient
+{
+    Task<SomeObject> GetSomeObjectAsync(CancellationToken cancellationToken = default);
+}
+```
 * Create class "ExampleClient" and inherit from "IExampleClient"
+```c#
+public class ExampleClient : IExampleClient
+{
+    private readonly IHttpHelper<ExampleClient> _http;
+
+    public ExampleClient(HttpHelper<ExampleClient> http)
+    {
+        _http = http;
+    }
+
+    public async Task<SomeObject> GetSomeObjectAsync(CancellationToken cancellationToken = default)
+    {
+        var result = await _http.GetJsonAsync<SomeObject>("/", cancellationToken).ConfigureAwait(false);
+
+        if (!result.IsSuccess)
+            throw new OpenApiException(result.Problem?.Title ?? "Unexpected error occurred", result.Exception);
+
+        return result.Data!;
+    }
+}
+```
 * Create property ```private readonly IHttpHelper<ExampleClient> _http``` and assign it from constructor by dephendency injection
 ```c#
 public ExampleClient(HttpHelper<ExampleClient> http)
@@ -21,9 +48,45 @@ public ExampleClient(HttpHelper<ExampleClient> http)
 }
 ```
 * Create class "ExampleClientOptions" and inherit from "TBC.OpenAPI.SDK.Core.OptionsBase"
+```c#
+public class ExampleClientOptions : OptionsBase{}
+```
 * Create class "ServiceCollectionExtensions" with extension method "AddExampleClient" for "Microsoft.Extensions.DependencyInjection.IServiceCollection", used for add client to middleware
-* Create class "FactoryExtensions" with extension method "AddExampleClient" for "TBC.OpenAPI.SDK.Core.OpenApiClientFactoryBuilder", used for pass options "ExampleClientOptions" into "OpenApiClientFactoryBuilder"
+```c#
+public static class ServiceCollectionExtensions
+{
+    public static IServiceCollection AddExampleClient(this IServiceCollection services, ExampleClientOptions options) 
+        => AddExampleClient(services, options, null, null);
 
+    public static IServiceCollection AddExampleClient(this IServiceCollection services, ExampleClientOptions options,
+        Action<HttpClient>? configureClient = null,
+        Func<HttpClientHandler>? configureHttpMessageHandler = null)
+    {
+        services.AddOpenApiClient<IExampleClient, ExampleClient, ExampleClientOptions>(options, configureClient, configureHttpMessageHandler);
+        return services;
+    }
+}
+```
+* Create class "FactoryExtensions" with extension method "AddExampleClient" for "TBC.OpenAPI.SDK.Core.OpenApiClientFactoryBuilder", used for pass options "ExampleClientOptions" into "OpenApiClientFactoryBuilder"
+```c#
+public static class FactoryExtensions
+{
+    public static OpenApiClientFactoryBuilder AddExampleClient(this OpenApiClientFactoryBuilder builder,
+        ExampleClientOptions options) => AddExampleClient(builder, options, null, null);
+
+    public static OpenApiClientFactoryBuilder AddExampleClient(this OpenApiClientFactoryBuilder builder,
+        ExampleClientOptions options,
+        Action<HttpClient>? configureClient = null,
+        Func<HttpClientHandler>? configureHttpMessageHandler = null)
+    {
+        return builder.AddClient<IExampleClient, ExampleClient, ExampleClientOptions>(options, configureClient, configureHttpMessageHandler);
+    }
+
+    public static IExampleClient GetExampleClient(this OpenApiClientFactory factory) =>
+        factory.GetOpenApiClient<IExampleClient>();
+
+}
+```
 ## Examples of projects
 Repository contains three [example projects](https://github.com/TBCBank/TBC.OpenAPI.SDK.Core/tree/master/examples):
 
