@@ -9,7 +9,7 @@ Repository contains the basic functionality used to work with Open Api SDKs.
 Library is written in the C # programming language and is compatible with .netstandard2.0 and .net6.0. Depends only on the components manufactured by Microsoft.
 
 
-## Consider example of using "ExampleClient" for creating SDK Client 
+## Example of using "ExampleClient" for creating SDK Client 
 
 * Create interface "IExampleClient" and inherit from "TBC.OpenAPI.SDK.Core.IOpenApiClient"
 ```c#
@@ -40,7 +40,7 @@ public class ExampleClient : IExampleClient
     }
 }
 ```
-* Create property ```private readonly IHttpHelper<ExampleClient> _http``` and assign it from constructor by dephendency injection
+* Create property ```private readonly IHttpHelper<ExampleClient> _http``` and assign it from the constructor by dependency injection
 ```c#
 public ExampleClient(HttpHelper<ExampleClient> http)
 {
@@ -51,7 +51,7 @@ public ExampleClient(HttpHelper<ExampleClient> http)
 ```c#
 public class ExampleClientOptions : OptionsBase{}
 ```
-* Create class "ServiceCollectionExtensions" with extension method "AddExampleClient" for "Microsoft.Extensions.DependencyInjection.IServiceCollection", used for add client to middleware
+* Create class "ServiceCollectionExtensions" with extension method "AddExampleClient" for "Microsoft.Extensions.DependencyInjection.IServiceCollection", used for adding client to middleware
 ```c#
 public static class ServiceCollectionExtensions
 {
@@ -67,7 +67,7 @@ public static class ServiceCollectionExtensions
     }
 }
 ```
-* Create class "FactoryExtensions" with extension method "AddExampleClient" for "TBC.OpenAPI.SDK.Core.OpenApiClientFactoryBuilder", used for pass options "ExampleClientOptions" into "OpenApiClientFactoryBuilder"
+* Create class "FactoryExtensions" with extension method "AddExampleClient" for "TBC.OpenAPI.SDK.Core.OpenApiClientFactoryBuilder", used for passing options "ExampleClientOptions" into "OpenApiClientFactoryBuilder"
 ```c#
 public static class FactoryExtensions
 {
@@ -95,7 +95,7 @@ Repository contains three [example projects](https://github.com/TBCBank/TBC.Open
 * UsageExample3 - .net WebApi Application
 
 
-## Consider example of using "UsageExample1"
+## Example of using "UsageExample1"
 
 ### Add "AddExampleClient" to Program.cs file with Dependency Injection and read settings for "ExampleClientOptions" from appsettings.json file
 
@@ -113,7 +113,7 @@ appsettings.json
 }
 ```
 
-#### Create variable "_exampleClient" of type "IExampleClient" in controller and initialize it using dependency injection 
+#### Create variable "_exampleClient" of type "IExampleClient" in controller and initialize it using dependency injection
 ```c#
 private readonly IExampleClient _exampleClient;
 
