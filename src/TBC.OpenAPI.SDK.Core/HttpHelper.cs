@@ -6,7 +6,7 @@ using TBC.OpenAPI.SDK.Core.Models;
 
 namespace TBC.OpenAPI.SDK.Core
 {
-    public class HttpHelper<TClient>
+    public class HttpHelper<TClient> : IHttpHelper<TClient>
         where TClient : class, IOpenApiClient
     {
         private static readonly JsonSerializerOptions DefaultJsonSerializerOptions = new JsonSerializerOptions(JsonSerializerDefaults.Web)

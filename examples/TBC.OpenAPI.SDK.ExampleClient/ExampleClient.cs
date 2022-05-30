@@ -6,7 +6,7 @@ namespace TBC.OpenAPI.SDK.ExampleClient
 {
     public class ExampleClient : IExampleClient
     {
-        private readonly HttpHelper<ExampleClient> _http;
+        private readonly IHttpHelper<ExampleClient> _http;
 
         public ExampleClient(HttpHelper<ExampleClient> http)
         {

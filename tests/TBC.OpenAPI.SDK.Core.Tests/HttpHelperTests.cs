@@ -1,12 +1,12 @@
-﻿using System;
+﻿using FluentAssertions;
+using FluentAssertions.Execution;
+using Moq;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using FluentAssertions;
-using FluentAssertions.Execution;
-using Moq;
 using TBC.OpenAPI.SDK.Core.Models;
 using TBC.OpenAPI.SDK.Core.Tests.Models;
 using Xunit;
@@ -15,21 +15,21 @@ namespace TBC.OpenAPI.SDK.Core.Tests
 {
     public class HttpHelperTests : IClassFixture<HttpHelperMocks>
     {
-        private HttpHelper<TestClient> _http;
+        private readonly IHttpHelper<TestClient> _http;
         public HttpHelperTests(HttpHelperMocks mocks)
         {
+            _http = new HttpHelper<TestClient>(null);
             var mock = new Mock<IHttpClientFactory>();
             mock.Setup(x => x.CreateClient(typeof(TestClient).FullName)).Returns(mocks.HttpClient);
             _http = new HttpHelper<TestClient>(mock.Object);
         }
+      
         [Fact]
         public async Task GetJsonAsync_WhenClientNull_Throws()
         {
-            //var mock = new Mock<IHttpClientFactory>();
-            _http = new HttpHelper<TestClient>(null);
-
+            var http = new HttpHelper<TestClient>(null);
             var ex = await Assert.ThrowsAsync<ArgumentNullException>(() =>
-              _http.GetJsonAsync<HttpTestResponseModel>("/some-resource", CancellationToken.None));
+              http.GetJsonAsync<HttpTestResponseModel>("/some-resource", CancellationToken.None));
 
             using (new AssertionScope())
             {
@@ -165,7 +165,7 @@ namespace TBC.OpenAPI.SDK.Core.Tests
             query.Add("Guid-params", new List<Guid> { Guid.NewGuid() });
             query.Add("DateOnly-params", new List<DateOnly> { new DateOnly(1991, 07, 22) });
             query.Add("TimeOnly-params", new List<TimeOnly> { new TimeOnly(11, 00, 00) });
-            query.Add("enum-params", new List<Enum>{TestEnum.Two});
+            query.Add("enum-params", new List<Enum> { TestEnum.Two });
 
             query.Add("null-string-params", (List<string>)null);
             query.Add("null-int-params", (List<int>)null);
