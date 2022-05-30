@@ -27,9 +27,9 @@ namespace TBC.OpenAPI.SDK.Core.Tests
         [Fact]
         public async Task GetJsonAsync_WhenClientNull_Throws()
         {
-            //var mock = new Mock<IHttpClientFactory>();
+            var http = new HttpHelper<TestClient>(null);
             var ex = await Assert.ThrowsAsync<ArgumentNullException>(() =>
-              _http.GetJsonAsync<HttpTestResponseModel>("/some-resource", CancellationToken.None));
+              http.GetJsonAsync<HttpTestResponseModel>("/some-resource", CancellationToken.None));
 
             using (new AssertionScope())
             {
