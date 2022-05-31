@@ -8,7 +8,7 @@ namespace TBC.OpenAPI.SDK.ExampleClient
     {
         private readonly IHttpHelper<ExampleClient> _http;
 
-        public ExampleClient(HttpHelper<ExampleClient> http)
+        public ExampleClient(IHttpHelper<ExampleClient> http)
         {
             _http = http;
         }
