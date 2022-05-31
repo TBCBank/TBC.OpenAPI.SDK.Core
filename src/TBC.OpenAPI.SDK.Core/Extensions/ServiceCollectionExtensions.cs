@@ -28,7 +28,7 @@ namespace TBC.OpenAPI.SDK.Core.Extensions
                 httpClientBuilder.ConfigurePrimaryHttpMessageHandler(configureHttpMessageHandler);
             }
 
-            services.TryAddSingleton(typeof(HttpHelper<>));
+            services.TryAddSingleton(typeof(IHttpHelper<>), typeof(HttpHelper<>));
             services.TryAddSingleton<TClientInterface, TClientImplementation>();
             services.TryAddSingleton(options);
 
