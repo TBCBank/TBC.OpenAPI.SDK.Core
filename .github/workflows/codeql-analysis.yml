@@ -7,23 +7,11 @@ on:
     paths:
       - '**.cs'
       - '**.csproj'
-    paths-ignore:
-      - 'images/**'
-      - 'docs/**'
-      - 'examples/**'
-      - 'packages/**'
-      - 'README.md'
     branches: [master]
   pull_request:
     paths:
       - '**.cs'
       - '**.csproj'
-    paths-ignore:
-      - 'images/**'
-      - 'docs/**'
-      - 'examples/**'
-      - 'packages/**'
-      - 'README.md'
     # The branches below must be a subset of the branches above
     branches: [master]
   schedule:
