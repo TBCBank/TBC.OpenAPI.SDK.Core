@@ -18,7 +18,6 @@ namespace TBC.OpenAPI.SDK.Core.Tests
         private readonly IHttpHelper<TestClient> _http;
         public HttpHelperTests(HttpHelperMocks mocks)
         {
-            _http = new HttpHelper<TestClient>(null);
             var mock = new Mock<IHttpClientFactory>();
             mock.Setup(x => x.CreateClient(typeof(TestClient).FullName)).Returns(mocks.HttpClient);
             _http = new HttpHelper<TestClient>(mock.Object);
