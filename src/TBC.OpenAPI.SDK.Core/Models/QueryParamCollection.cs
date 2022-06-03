@@ -1,38 +1,32 @@
 ﻿using System.Collections.Specialized;
 using System.Net;
+using System.Linq;
+using System.Web;
+using System.Text;
+using TBC.OpenAPI.SDK.Core.QueryStringHelper;
 
 namespace TBC.OpenAPI.SDK.Core.Models
 {
     public sealed class QueryParamCollection : Dictionary<string, ParamValue>
-    {
+    { 
         public string ToQueryString()
         {
-             var query = new NameValueCollection();
-
+            var queryStringBulder = QueryStringBuilder.StartBuild();
             foreach (var item in this)
             {
-                var value = item.Value;
-                if (value?.Value is not null)
+                if (item.Value?.Value is not null)
                 {
-                    query.Add(item.Key, value.ToString());
+                    queryStringBulder.AddParameter(item.Key, item.Value.Value);
                 }
-                else
-                if (value?.Values is not null)
+                else if (item.Value?.Values is not null)
                 {
-                    foreach (var v in value.Values)
+                    foreach (var v in item.Value.Values)
                     {
-                        query.Add(item.Key, v.ToString());
+                        queryStringBulder.AddParameter(item.Key, v.ToString());
                     }
                 }
             }
-
-            if (!query.HasKeys())
-                return string.Empty;
-
-            var segments = query.AllKeys.SelectMany(key => query.GetValues(key),
-                (key, value) => $"{WebUtility.UrlEncode(key)}={WebUtility.UrlEncode(value)}");
-
-            return "?" + string.Join("&", segments);
+            return queryStringBulder.Finish().GetBuildedQuery();
         }
     }
 }
