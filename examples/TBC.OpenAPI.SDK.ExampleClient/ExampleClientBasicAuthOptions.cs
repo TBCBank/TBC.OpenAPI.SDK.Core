@@ -5,7 +5,7 @@ using TBC.OpenAPI.SDK.Core;
 
 namespace TBC.OpenAPI.SDK.ExampleClient
 {
-    public class ExampleClientOptionsWithClientSecret : OptionsBaseWithClientSecret
+    public class ExampleClientBasicAuthOptions : BasicAuthOptions
     {
     }
 }

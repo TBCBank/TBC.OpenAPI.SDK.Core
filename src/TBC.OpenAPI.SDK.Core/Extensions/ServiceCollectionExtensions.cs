@@ -16,14 +16,11 @@ namespace TBC.OpenAPI.SDK.Core.Extensions
         {
             var httpClientBuilder = services.AddHttpClient(typeof(TClientImplementation).FullName, client =>
             {
-                var test = typeof(TOptions);
-
-                if (typeof(OptionsBaseWithClientSecret).IsAssignableFrom(typeof(TOptions)))
+               
+                if (typeof(BasicAuthOptions).IsAssignableFrom(typeof(TOptions)))
                 {
-                    //OptionsBaseWithClientSecret opt = (OptionsBaseWithClientSecret)Convert
-                    //.ChangeType(options, typeof(OptionsBaseWithClientSecret));
-
-                    var opt = options as OptionsBaseWithClientSecret;
+                    
+                    var opt = options as BasicAuthOptions;
 
                     string encoded = System.Convert.ToBase64String(Encoding.GetEncoding("ISO-8859-1")
                                .GetBytes(opt.ApiKey + ":" + opt.ClientSecret));

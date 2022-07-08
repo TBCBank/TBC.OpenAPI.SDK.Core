@@ -10,7 +10,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddExampleClient(builder.Configuration.GetSection("ExampleClient").Get<ExampleClientOptionsWithClientSecret>());
+builder.Services.AddExampleClient(builder.Configuration.GetSection("ExampleClient").Get<ExampleClientBasicAuthOptions>());
 
 
 var app = builder.Build();

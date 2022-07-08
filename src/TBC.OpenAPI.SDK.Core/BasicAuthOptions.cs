@@ -4,7 +4,7 @@ using System.Text;
 
 namespace TBC.OpenAPI.SDK.Core
 {
-    public abstract class OptionsBaseWithClientSecret : OptionsBase
+    public abstract class BasicAuthOptions : OptionsBase
     {
         public string ClientSecret { get; set; } = null!;
     }

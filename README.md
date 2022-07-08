@@ -48,7 +48,7 @@ public ExampleClient(HttpHelper<ExampleClient> http)
 }
 ```
 * Create class "ExampleClientOptions" and inherit from "TBC.OpenAPI.SDK.Core.OptionsBase"
-* If you need client secret in options, inherit from "TBC.OpenAPI.SDK.Core.OptionsBaseWithClientSecret"
+* If you need client secret in options, inherit from "TBC.OpenAPI.SDK.Core.BasicAuthOptions"
 
 ```c#
 public class ExampleClientOptions : OptionsBase{}
@@ -118,7 +118,7 @@ appsettings.json
 
 Program.cs
 ```c#
-builder.Services.AddExampleClient(builder.Configuration.GetSection("ExampleClient").Get<OptionsBaseWithClientSecret>());
+builder.Services.AddExampleClient(builder.Configuration.GetSection("ExampleClient").Get<BasicAuthOptions>());
 ```
 appsettings.json
 ```json
