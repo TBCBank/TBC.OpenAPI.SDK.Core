@@ -48,6 +48,8 @@ public ExampleClient(HttpHelper<ExampleClient> http)
 }
 ```
 * Create class "ExampleClientOptions" and inherit from "TBC.OpenAPI.SDK.Core.OptionsBase"
+* If you need client secret in options, inherit from "TBC.OpenAPI.SDK.Core.OptionsBaseWithClientSecret"
+
 ```c#
 public class ExampleClientOptions : OptionsBase{}
 ```
@@ -109,6 +111,22 @@ appsettings.json
   "ExampleClient": {
     "BaseUrl": "https://run.mocky.io/v3/7690b5f0-cc43-4c03-b07f-2240b4448931/",
     "ApiKey": "abc"
+  } 
+}
+```
+* In case you need client secret
+
+Program.cs
+```c#
+builder.Services.AddExampleClient(builder.Configuration.GetSection("ExampleClient").Get<OptionsBaseWithClientSecret>());
+```
+appsettings.json
+```json
+{
+  "ExampleClient": {
+    "BaseUrl": "https://run.mocky.io/v3/7690b5f0-cc43-4c03-b07f-2240b4448931/",
+    "ApiKey": "abc",
+    "ClientSecret": "abc"
   } 
 }
 ```

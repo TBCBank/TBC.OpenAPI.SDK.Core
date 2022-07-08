@@ -36,6 +36,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TBC.OpenAPI.SDK.Core.Tests"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TBC.OpenAPI.SDK.ExampleClient", "examples\TBC.OpenAPI.SDK.ExampleClient\TBC.OpenAPI.SDK.ExampleClient.csproj", "{4781CB51-82B2-4C81-8DD3-F0B8D43D4B01}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UsageExample4", "examples\UsageExample4\UsageExample4.csproj", "{4B6B8E61-2E02-4D1D-8F3A-8B7DA63F5C3B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -66,6 +68,10 @@ Global
 		{4781CB51-82B2-4C81-8DD3-F0B8D43D4B01}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4781CB51-82B2-4C81-8DD3-F0B8D43D4B01}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4781CB51-82B2-4C81-8DD3-F0B8D43D4B01}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4B6B8E61-2E02-4D1D-8F3A-8B7DA63F5C3B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4B6B8E61-2E02-4D1D-8F3A-8B7DA63F5C3B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4B6B8E61-2E02-4D1D-8F3A-8B7DA63F5C3B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4B6B8E61-2E02-4D1D-8F3A-8B7DA63F5C3B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -78,6 +84,7 @@ Global
 		{E3DAC414-1447-4297-B9B5-EA8E14DF4DD5} = {D93C5C4E-65C3-4AE2-98B7-51BBDA578C3A}
 		{FD836F18-B715-4EF2-B41B-BECB4F0B6913} = {F068D92C-EC84-452F-BF81-BD548EAE5BAF}
 		{4781CB51-82B2-4C81-8DD3-F0B8D43D4B01} = {322E62F9-79CE-40D6-A7D2-AC2375CF4C18}
+		{4B6B8E61-2E02-4D1D-8F3A-8B7DA63F5C3B} = {322E62F9-79CE-40D6-A7D2-AC2375CF4C18}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6EA70694-3D75-4295-9BE5-B779CA933036}
