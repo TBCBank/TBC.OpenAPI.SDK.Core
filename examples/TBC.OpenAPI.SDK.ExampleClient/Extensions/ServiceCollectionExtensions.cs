@@ -15,5 +15,19 @@ namespace TBC.OpenAPI.SDK.ExampleClient.Extensions
             services.AddOpenApiClient<IExampleClient, ExampleClient, ExampleClientOptions>(options, configureClient, configureHttpMessageHandler);
             return services;
         }
+
+
+
+
+        public static IServiceCollection AddExampleClient(this IServiceCollection services, ExampleClientBasicAuthOptions options) 
+            => AddExampleClient(services, options, null, null);
+
+        public static IServiceCollection AddExampleClient(this IServiceCollection services, ExampleClientBasicAuthOptions options,
+            Action<HttpClient>? configureClient = null,
+            Func<HttpClientHandler>? configureHttpMessageHandler = null)
+        {
+            services.AddOpenApiClient<IExampleClient, ExampleClient, ExampleClientBasicAuthOptions>(options, configureClient, configureHttpMessageHandler);
+            return services;
+        }
     }
 }

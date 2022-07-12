@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using System.Text;
 
 namespace TBC.OpenAPI.SDK.Core.Extensions
 {
@@ -15,11 +16,21 @@ namespace TBC.OpenAPI.SDK.Core.Extensions
         {
             var httpClientBuilder = services.AddHttpClient(typeof(TClientImplementation).FullName, client =>
             {
-                client.BaseAddress = new Uri(options.BaseUrl);
-                if (!string.IsNullOrWhiteSpace(options.ApiKey))
+               
+                if (typeof(BasicAuthOptions).IsAssignableFrom(typeof(TOptions)))
+                {
+                    
+                    var opt = options as BasicAuthOptions;
+
+                    string encoded = System.Convert.ToBase64String(Encoding.GetEncoding("ISO-8859-1")
+                               .GetBytes(opt.ApiKey + ":" + opt.ClientSecret));
+                    client.DefaultRequestHeaders.Add("Authorization", "Basic " + encoded);
+                }
+                else if (typeof(OptionsBase).IsAssignableFrom(typeof(TOptions)))
                 {
                     client.DefaultRequestHeaders.Add("apikey", options.ApiKey);
                 }
+                client.BaseAddress = new Uri(options.BaseUrl);
                 configureClient?.Invoke(client);
             });
 
