@@ -15,16 +15,24 @@ namespace TBC.OpenAPI.SDK.Core
 
         #region Post
         public Task<ApiResponse<TResponseData>> PostJsonAsync<TRequestData, TResponseData>(string path, TRequestData data, CancellationToken cancellationToken = default);
-
         public Task<ApiResponse<TResponseData>> PostJsonAsync<TRequestData, TResponseData>(string path, TRequestData data, QueryParamCollection? query = null, CancellationToken cancellationToken = default);
-
         public Task<ApiResponse<TResponseData>> PostJsonAsync<TRequestData, TResponseData>(string path, TRequestData data, QueryParamCollection? query = null, HeaderParamCollection? headers = null, CancellationToken cancellationToken = default);
 
+
+        public Task<ApiResponse<TResponseData>> PostJsonAsync<TRequestData, TResponseData>(string path, TRequestData data, string mediaType = "application/json", CancellationToken cancellationToken = default);
+        public Task<ApiResponse<TResponseData>> PostJsonAsync<TRequestData, TResponseData>(string path, TRequestData data, QueryParamCollection? query = null, string mediaType = "application/json", CancellationToken cancellationToken = default);
+        public Task<ApiResponse<TResponseData>> PostJsonAsync<TRequestData, TResponseData>(string path, TRequestData data, QueryParamCollection? query = null, HeaderParamCollection? headers = null, string mediaType = "application/json", CancellationToken cancellationToken = default);
+
+
+
         public Task<ApiResponseBase> PostJsonAsync<TRequestData>(string path, TRequestData data, CancellationToken cancellationToken = default);
-
         public Task<ApiResponseBase> PostJsonAsync<TRequestData>(string path, TRequestData data, QueryParamCollection? query = null, CancellationToken cancellationToken = default);
-
         public Task<ApiResponseBase> PostJsonAsync<TRequestData>(string path, TRequestData data, QueryParamCollection? query = null, HeaderParamCollection? headers = null, CancellationToken cancellationToken = default);
+
+
+        public Task<ApiResponseBase> PostJsonAsync<TRequestData>(string path, TRequestData data, string mediaType = "application/json", CancellationToken cancellationToken = default);
+        public Task<ApiResponseBase> PostJsonAsync<TRequestData>(string path, TRequestData data, QueryParamCollection? query = null, string mediaType = "application/json", CancellationToken cancellationToken = default);
+        public Task<ApiResponseBase> PostJsonAsync<TRequestData>(string path, TRequestData data, QueryParamCollection? query = null, HeaderParamCollection? headers = null, string mediaType = "application/json", CancellationToken cancellationToken = default);
         #endregion
 
         #region Put
