@@ -61,18 +61,17 @@ namespace TBC.OpenAPI.SDK.Core
 
 
 
-        public Task<ApiResponse<TResponseData>> PostJsonAsync<TRequestData, TResponseData>(string path, TRequestData data, string mediaType = "application/json", CancellationToken cancellationToken = default)
-            => PostJsonAsync<TRequestData, TResponseData>(path, data, null, null, mediaType, cancellationToken);
+        public Task<ApiResponse<TResponseData>> PostJsonAsync<TResponseData>(string path, StringContent content, string mediaType = "application/json", CancellationToken cancellationToken = default)
+            => PostJsonAsync<TResponseData>(path, content, null, null, mediaType, cancellationToken);
 
-        public Task<ApiResponse<TResponseData>> PostJsonAsync<TRequestData, TResponseData>(string path, TRequestData data, QueryParamCollection? query = null, string mediaType = "application/json", CancellationToken cancellationToken = default)
-            => PostJsonAsync<TRequestData, TResponseData>(path, data, query, null,mediaType, cancellationToken);
+        public Task<ApiResponse<TResponseData>> PostJsonAsync<TResponseData>(string path, StringContent content, QueryParamCollection? query = null, string mediaType = "application/json", CancellationToken cancellationToken = default)
+            => PostJsonAsync<TResponseData>(path, content, query, null,mediaType, cancellationToken);
 
-        public async Task<ApiResponse<TResponseData>> PostJsonAsync<TRequestData, TResponseData>(string path, TRequestData data, QueryParamCollection? query = null, HeaderParamCollection? headers = null, string mediaType = "application/json", CancellationToken cancellationToken = default)
+        public async Task<ApiResponse<TResponseData>> PostJsonAsync<TResponseData>(string path, StringContent content, QueryParamCollection? query = null, HeaderParamCollection? headers = null, string mediaType = "application/json", CancellationToken cancellationToken = default)
         {
             var httpClient = GetHttpClient();
             var requestMessage = CreateRequestMessage(httpClient, HttpMethod.Post, path, query, headers);
-            var json = JsonSerializer.Serialize(data, _jsonSerializerOptions);
-            requestMessage.Content = new StringContent(json, Encoding.UTF8, mediaType);
+            requestMessage.Content = content;
             return await SendRequestMessage<TResponseData>(httpClient, requestMessage, cancellationToken).ConfigureAwait(false);
         }
 
@@ -94,20 +93,17 @@ namespace TBC.OpenAPI.SDK.Core
         }
 
 
+        public Task<ApiResponseBase> PostJsonAsync(string path, StringContent content, string mediaType = "application/json", CancellationToken cancellationToken = default)
+            => PostJsonAsync(path, content, null, null,mediaType, cancellationToken);
 
+        public Task<ApiResponseBase> PostJsonAsync(string path, StringContent content, QueryParamCollection? query = null, string mediaType = "application/json", CancellationToken cancellationToken = default)
+            => PostJsonAsync(path, content, query, null, mediaType, cancellationToken);
 
-        public Task<ApiResponseBase> PostJsonAsync<TRequestData>(string path, TRequestData data, string mediaType = "application/json", CancellationToken cancellationToken = default)
-            => PostJsonAsync(path, data, null, null,mediaType, cancellationToken);
-
-        public Task<ApiResponseBase> PostJsonAsync<TRequestData>(string path, TRequestData data, QueryParamCollection? query = null, string mediaType = "application/json", CancellationToken cancellationToken = default)
-            => PostJsonAsync(path, data, query, null, mediaType, cancellationToken);
-
-        public async Task<ApiResponseBase> PostJsonAsync<TRequestData>(string path, TRequestData data, QueryParamCollection? query = null, HeaderParamCollection? headers = null, string mediaType = "application/json", CancellationToken cancellationToken = default)
+        public async Task<ApiResponseBase> PostJsonAsync(string path, StringContent content, QueryParamCollection? query = null, HeaderParamCollection? headers = null, string mediaType = "application/json", CancellationToken cancellationToken = default)
         {
             var httpClient = GetHttpClient();
             var requestMessage = CreateRequestMessage(httpClient, HttpMethod.Post, path, query, headers);
-            var json = JsonSerializer.Serialize(data, _jsonSerializerOptions);
-            requestMessage.Content = new StringContent(json, Encoding.UTF8, mediaType);
+            requestMessage.Content = content;
             return await SendRequestMessage(httpClient, requestMessage, cancellationToken).ConfigureAwait(false);
         }
 
