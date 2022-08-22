@@ -61,17 +61,17 @@ namespace TBC.OpenAPI.SDK.Core
 
 
 
-        public Task<ApiResponse<TResponseData>> PostJsonAsync<TResponseData>(string path, StringContent content, string mediaType = "application/json", CancellationToken cancellationToken = default)
-            => PostJsonAsync<TResponseData>(path, content, null, null, mediaType, cancellationToken);
+        public Task<ApiResponse<TResponseData>> PostUrlFormAsync<TResponseData>(string path, UrlFormCollection content, CancellationToken cancellationToken = default)
+            => PostUrlFormAsync<TResponseData>(path, content, null, null, cancellationToken);
 
-        public Task<ApiResponse<TResponseData>> PostJsonAsync<TResponseData>(string path, StringContent content, QueryParamCollection? query = null, string mediaType = "application/json", CancellationToken cancellationToken = default)
-            => PostJsonAsync<TResponseData>(path, content, query, null,mediaType, cancellationToken);
+        public Task<ApiResponse<TResponseData>> PostUrlFormAsync<TResponseData>(string path, UrlFormCollection content, QueryParamCollection? query = null, CancellationToken cancellationToken = default)
+            => PostUrlFormAsync<TResponseData>(path, content, query, null, cancellationToken);
 
-        public async Task<ApiResponse<TResponseData>> PostJsonAsync<TResponseData>(string path, StringContent content, QueryParamCollection? query = null, HeaderParamCollection? headers = null, string mediaType = "application/json", CancellationToken cancellationToken = default)
+        public async Task<ApiResponse<TResponseData>> PostUrlFormAsync<TResponseData>(string path, UrlFormCollection content, QueryParamCollection? query = null, HeaderParamCollection? headers = null, CancellationToken cancellationToken = default)
         {
             var httpClient = GetHttpClient();
             var requestMessage = CreateRequestMessage(httpClient, HttpMethod.Post, path, query, headers);
-            requestMessage.Content = content;
+            requestMessage.Content = new FormUrlEncodedContent(content);
             return await SendRequestMessage<TResponseData>(httpClient, requestMessage, cancellationToken).ConfigureAwait(false);
         }
 
@@ -93,17 +93,17 @@ namespace TBC.OpenAPI.SDK.Core
         }
 
 
-        public Task<ApiResponseBase> PostJsonAsync(string path, StringContent content, string mediaType = "application/json", CancellationToken cancellationToken = default)
-            => PostJsonAsync(path, content, null, null,mediaType, cancellationToken);
+        public Task<ApiResponseBase> PostUrlFormAsync(string path, UrlFormCollection content, CancellationToken cancellationToken = default)
+            => PostUrlFormAsync(path, content, null, null, cancellationToken);
 
-        public Task<ApiResponseBase> PostJsonAsync(string path, StringContent content, QueryParamCollection? query = null, string mediaType = "application/json", CancellationToken cancellationToken = default)
-            => PostJsonAsync(path, content, query, null, mediaType, cancellationToken);
+        public Task<ApiResponseBase> PostUrlFormAsync(string path, UrlFormCollection content, QueryParamCollection? query = null, CancellationToken cancellationToken = default)
+            => PostUrlFormAsync(path, content, query, null, cancellationToken);
 
-        public async Task<ApiResponseBase> PostJsonAsync(string path, StringContent content, QueryParamCollection? query = null, HeaderParamCollection? headers = null, string mediaType = "application/json", CancellationToken cancellationToken = default)
+        public async Task<ApiResponseBase> PostUrlFormAsync(string path, UrlFormCollection content, QueryParamCollection? query = null, HeaderParamCollection? headers = null, CancellationToken cancellationToken = default)
         {
             var httpClient = GetHttpClient();
             var requestMessage = CreateRequestMessage(httpClient, HttpMethod.Post, path, query, headers);
-            requestMessage.Content = content;
+            requestMessage.Content = new FormUrlEncodedContent(content);
             return await SendRequestMessage(httpClient, requestMessage, cancellationToken).ConfigureAwait(false);
         }
 
