@@ -51,7 +51,7 @@ namespace TBC.OpenAPI.SDK.Core.Tests
 
                 response.Data.Should().NotBeNull();
                 response.Data.Id.Should().Be(1);
-                response.Data.Name.Should().Be("One");
+                response.Data.Name.Should().Be("Leanne Graham");
                 response.Data.Date.Should().Be(new DateTime(2001, 1, 1));
                 response.Data.Numbers.Should().Equal(new List<int>(3) { 1, 2, 3 });
 
@@ -80,7 +80,7 @@ namespace TBC.OpenAPI.SDK.Core.Tests
 
                 response.Data.Should().NotBeNull();
                 response.Data.Id.Should().Be(1);
-                response.Data.Name.Should().Be("One");
+                response.Data.Name.Should().Be("Leanne Graham");
                 response.Data.Date.Should().Be(new DateTime(2001, 1, 1));
                 response.Data.Numbers.Should().Equal(new List<int>(3) { 1, 2, 3 });
 
@@ -210,7 +210,7 @@ namespace TBC.OpenAPI.SDK.Core.Tests
 
                 response.Data.Should().NotBeNull();
                 response.Data.Id.Should().Be(1);
-                response.Data.Name.Should().Be("One");
+                response.Data.Name.Should().Be("Leanne Graham");
                 response.Data.Date.Should().Be(new DateTime(2001, 1, 1));
                 response.Data.Numbers.Should().Equal(new List<int>(3) { 1, 2, 3 });
 
