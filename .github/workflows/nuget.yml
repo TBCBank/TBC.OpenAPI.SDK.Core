@@ -38,7 +38,6 @@ jobs:
         dotnet-version: 8.0.x
         include-prerelease: false
 
-    # Use vanilla NuGet.exe because dotnet nuget command has a bug: it ignores --source parameter
     - name: Setup NuGet.exe
       uses: NuGet/setup-nuget@v2
       with:
@@ -49,15 +48,18 @@ jobs:
     - name: Remove net framework example project
       run: dotnet sln remove "examples\UsageExample3\UsageExample3.csproj"
 
-    - name: Restore
-      run: dotnet restore -p:Configuration=Release
+    - name: Restore .NET Framework 4.8 Projects
+      run: |
+        dotnet restore "src\TBC.OpenAPI.SDK.Core\TBC.OpenAPI.SDK.Core.csproj" -p:Configuration=Release
+        dotnet restore "examples\UsageExample3\UsageExample3.csproj" -p:Configuration=Release
 
-    - name: Build
-      run: dotnet build -c Release --no-restore -p:SourceRevisionId=$(git rev-parse --short $env:GITHUB_SHA)
+    - name: Build .NET Framework 4.8 Projects
+      run: |
+        msbuild "src\TBC.OpenAPI.SDK.Core\TBC.OpenAPI.SDK.Core.csproj" /p:Configuration=Release /p:TargetFrameworkVersion=v4.8 /p:SourceRevisionId=$(git rev-parse --short $env:GITHUB_SHA)
+        msbuild "examples\UsageExample3\UsageExample3.csproj" /p:Configuration=Release /p:TargetFrameworkVersion=v4.8
 
-    - name: Test
-      run: | 
-        dotnet test -c Release --no-restore --no-build --verbosity normal
+    - name: Test .NET Framework 4.8 Projects
+      run: dotnet test "src\TBC.OpenAPI.SDK.Core\TBC.OpenAPI.SDK.Core.csproj" -c Release --no-restore --no-build --verbosity normal
 
     - name: Push TBC.OpenAPI.SDK.Core
       run: nuget push "src\TBC.OpenAPI.SDK.Core\bin\Release\*.nupkg" -NonInteractive -SkipDuplicate -Source "https://api.nuget.org/v3/index.json" -NoSymbols -ForceEnglishOutput
