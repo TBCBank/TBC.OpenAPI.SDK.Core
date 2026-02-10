@@ -45,6 +45,11 @@ jobs:
         dotnet-version: 8.0.x
         include-prerelease: false
 
+    - name: Install Mono (required to run nuget.exe on Linux)
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y mono-devel
+
     - name: Setup NuGet CLI
       uses: NuGet/setup-nuget@v1
 
