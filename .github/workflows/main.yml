@@ -22,10 +22,11 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    # Use Windows runner so .NET Framework 4.8 developer packs / reference assemblies are available
+    runs-on: windows-latest
     defaults:
       run:
-        shell: bash
+        shell: powershell
     env:
       DOTNET_CLI_TELEMETRY_OPTOUT: 1
       DOTNET_DISABLE_GUI_ERRORS: 1
@@ -45,26 +46,12 @@ jobs:
         dotnet-version: 8.0.x
         include-prerelease: false
 
-    - name: Install Mono (required to run nuget.exe on Linux)
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y mono-devel
-
-    - name: Setup NuGet CLI
-      uses: NuGet/setup-nuget@v1
-
-    - name: Install .NET Framework Reference Assemblies (for packages.config project)
-      run: |
-        # install the package into a top-level 'packages' folder so legacy projects can resolve reference assemblies on Linux runners
-        nuget install Microsoft.NETFramework.ReferenceAssemblies -Version 1.0.3 -OutputDirectory packages
-
     - name: Restore
       run: dotnet restore -p:Configuration=Release
 
     - name: Build
       run: |
-        dotnet build -c Release --no-restore -p:SourceRevisionId=$(git rev-parse --short $GITHUB_SHA)
+        dotnet build -c Release --no-restore -p:SourceRevisionId=$(git rev-parse --short $Env:GITHUB_SHA)
 
     - name: Test
-      run: | 
-        dotnet test -c Release --no-restore --no-build --verbosity normal
+      run: dotnet test -c Release --no-restore --no-build --verbosity normal
