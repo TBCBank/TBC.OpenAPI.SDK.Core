@@ -45,9 +45,13 @@ jobs:
         dotnet-version: 8.0.x
         include-prerelease: false
 
-    - name: Setup Nuget for .NET Framework Reference Assemblies
+    - name: Setup NuGet CLI
+      uses: NuGet/setup-nuget@v1
+
+    - name: Install .NET Framework Reference Assemblies (for packages.config project)
       run: |
-        dotnet add examples/UsageExample3/UsageExample3.csproj package Microsoft.NETFramework.ReferenceAssemblies --version 1.0.3
+        # install the package into a top-level 'packages' folder so legacy projects can resolve reference assemblies on Linux runners
+        nuget install Microsoft.NETFramework.ReferenceAssemblies -Version 1.0.3 -OutputDirectory packages
 
     - name: Restore
       run: dotnet restore -p:Configuration=Release
