@@ -4,26 +4,28 @@ name: CI
 
 on:
   push:
-    branches: [ master ]
     paths-ignore:
       - 'images/**'
       - 'docs/**'
       - 'examples/**'
       - 'packages/**'
       - 'README.md'
+    branches: [ master ]
   pull_request:
-    branches: [ master ]
     paths-ignore:
       - 'images/**'
       - 'docs/**'
       - 'examples/**'
       - 'packages/**'
       - 'README.md'
+    branches: [ master ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
+    defaults:
+      run:
+        shell: bash
     env:
       DOTNET_CLI_TELEMETRY_OPTOUT: 1
       DOTNET_DISABLE_GUI_ERRORS: 1
@@ -32,32 +34,28 @@ jobs:
       DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 1
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 1
 
-      - name: Setup .NET 8 SDK
-        uses: actions/setup-dotnet@v3
-        with:
-          dotnet-version: 8.0.x
+    - name: Setup .NET 8 SDK
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+        include-prerelease: false
 
-      - name: Restore
-        run: |
-          dotnet restore src\TBC.OpenAPI.SDK.Core\TBC.OpenAPI.SDK.Core.csproj
-          dotnet restore tests\TBC.OpenAPI.SDK.Core.Tests\TBC.OpenAPI.SDK.Core.Tests.csproj
+    - name: Setup Nuget for .NET Framework Reference Assemblies
+      run: |
+        dotnet add examples/UsageExample3/UsageExample3.csproj package Microsoft.NETFramework.ReferenceAssemblies --version 1.0.3
 
-      - name: Build
-        run: |
-          dotnet build src\TBC.OpenAPI.SDK.Core\TBC.OpenAPI.SDK.Core.csproj \
-            -c Release \
-            --no-restore \
-            -p:SourceRevisionId=$(git rev-parse --short $GITHUB_SHA)
+    - name: Restore
+      run: dotnet restore -p:Configuration=Release
 
-      - name: Test
-        run: |
-          dotnet test tests\TBC.OpenAPI.SDK.Core.Tests\TBC.OpenAPI.SDK.Core.Tests.csproj \
-            -c Release \
-            --no-build \
-            --no-restore \
-            --verbosity normal
+    - name: Build
+      run: |
+        dotnet build -c Release --no-restore -p:SourceRevisionId=$(git rev-parse --short $GITHUB_SHA)
+
+    - name: Test
+      run: | 
+        dotnet test -c Release --no-restore --no-build --verbosity normal
