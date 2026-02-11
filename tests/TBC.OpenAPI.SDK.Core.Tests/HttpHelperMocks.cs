@@ -46,7 +46,7 @@ namespace TBC.OpenAPI.SDK.Core.Tests
                         .WithBodyAsJson(new HttpTestResponseModel
                         {
                             Id = 1,
-                            Name = "One",
+                            Name = "Leanne Graham",
                             Date = new DateTime(2001, 1, 1),
                             Numbers = new List<int>(3) { 1, 2, 3 }
                         })

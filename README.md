@@ -109,7 +109,7 @@ appsettings.json
 ```json
 {
   "ExampleClient": {
-    "BaseUrl": "https://run.mocky.io/v3/7690b5f0-cc43-4c03-b07f-2240b4448931/",
+    "BaseUrl": "https://jsonplaceholder.typicode.com/users/1",
     "ApiKey": "abc"
   } 
 }
@@ -124,7 +124,7 @@ appsettings.json
 ```json
 {
   "ExampleClient": {
-    "BaseUrl": "https://run.mocky.io/v3/7690b5f0-cc43-4c03-b07f-2240b4448931/",
+    "BaseUrl": "https://jsonplaceholder.typicode.com/users/1",
     "ApiKey": "abc",
     "ClientSecret": "abc"
   } 
@@ -155,6 +155,6 @@ public async Task<ActionResult<SomeObject>> GetSomeObject(CancellationToken canc
 ```json
 {
   "id": 1,
-  "name": "one"
+  "name": "Leanne Graham"
 }
 ```

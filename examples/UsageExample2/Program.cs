@@ -7,7 +7,7 @@ using TBC.OpenAPI.SDK.ExampleClient.Extensions;
 var factory = new OpenApiClientFactoryBuilder()
     .AddExampleClient(new ExampleClientOptions
     {
-        BaseUrl = "https://run.mocky.io/v3/7690b5f0-cc43-4c03-b07f-2240b4448931/",
+        BaseUrl = "https://jsonplaceholder.typicode.com/users/1",
         ApiKey = "abc"
     })
     .Build();

@@ -28,26 +28,20 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         fetch-depth: 10
 
-    - name: Setup .NET 6 SDK
-      uses: actions/setup-dotnet@v2
+    - name: Setup .NET 8 SDK
+      uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: 6.0.x
+        dotnet-version: 8.0.x
         include-prerelease: false
 
-    # Use vanilla NuGet.exe because dotnet nuget command has a bug: it ignores --source parameter
     - name: Setup NuGet.exe
-      uses: NuGet/setup-nuget@v1
+      uses: NuGet/setup-nuget@v2
       with:
         nuget-api-key: ${{ secrets.NUGET_API_KEY }}
-        nuget-version: latest
-        nuget-api-key-source: 'https://api.nuget.org/v3/index.json'
-
-    - name: Remove net framework example project
-      run: dotnet sln remove "examples\UsageExample3\UsageExample3.csproj"
 
     - name: Restore
       run: dotnet restore -p:Configuration=Release
