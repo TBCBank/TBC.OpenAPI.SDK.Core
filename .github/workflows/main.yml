@@ -4,21 +4,30 @@ name: CI
 
 on:
   push:
+    branches:
+      - master
+      - main
+      - 'feature/**'
+    tags:
+      - '*'
     paths-ignore:
       - 'images/**'
       - 'docs/**'
       - 'examples/**'
       - 'packages/**'
       - 'README.md'
-    branches: [ master ]
   pull_request:
+    branches:
+      - master
+      - main
+      - 'feature/**'
     paths-ignore:
       - 'images/**'
       - 'docs/**'
       - 'examples/**'
       - 'packages/**'
       - 'README.md'
-    branches: [ master ]
+  workflow_dispatch: {}
 
 jobs:
   build-sdk:
