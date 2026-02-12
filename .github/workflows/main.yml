@@ -31,14 +31,14 @@ on:
 
 jobs:
   build-sdk:
-    name: Build (SDK projects) — Ubuntu
+    name: Build (SDK projects) ï¿½ Ubuntu
     runs-on: ubuntu-latest
     defaults:
       run:
         shell: bash
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 1
 
@@ -79,14 +79,14 @@ jobs:
           done
 
   build-legacy:
-    name: Build (Legacy .NET Framework) — Windows
+    name: Build (Legacy .NET Framework) ï¿½ Windows
     runs-on: windows-latest
     defaults:
       run:
         shell: powershell
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 1
 
