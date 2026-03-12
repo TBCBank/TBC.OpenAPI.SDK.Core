@@ -31,7 +31,7 @@ on:
 
 jobs:
   build-sdk:
-    name: Build (SDK projects) — Ubuntu
+    name: Build (SDK projects) ï¿½ Ubuntu
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -79,7 +79,7 @@ jobs:
           done
 
   build-legacy:
-    name: Build (Legacy .NET Framework) — Windows
+    name: Build (Legacy .NET Framework) ï¿½ Windows
     runs-on: windows-latest
     defaults:
       run:
@@ -97,7 +97,7 @@ jobs:
           include-prerelease: false
 
       - name: Setup NuGet CLI
-        uses: NuGet/setup-nuget@v1
+        uses: NuGet/setup-nuget@v2
 
       - name: Restore packages.config packages (NuGet)
         run: |
