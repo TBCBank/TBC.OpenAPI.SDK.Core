@@ -45,13 +45,7 @@ jobs:
         nuget-version: latest
         nuget-api-key-source: 'https://api.nuget.org/v3/index.json'
 
-    - name: Restore packages.config dependencies
-      run: |
-        $sln = (Get-ChildItem -Path . -Filter *.sln -Recurse | Select-Object -First 1).FullName
-        if (-not $sln) { throw "No solution file found." }
-        nuget restore $sln -PackagesDirectory .\packages -NonInteractive
-
-    - name: Restore SDK-style dependencies
+    - name: Restore
       run: dotnet restore -p:Configuration=Release
 
     - name: Build

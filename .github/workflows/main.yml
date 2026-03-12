@@ -70,7 +70,7 @@ jobs:
         run: |
           set -e
           # Run dotnet test on projects that look like test projects
-          mapfile -t sdk_projects < <(grep -rl --null --exclude-dir=packages '<Project Sdk=' --include='*.csproj' . | tr '\0' '\n' || true)
+          mapfile -t sdk_projects < <(grep -rl --null --exclude-dir:packages '<Project Sdk=' --include='*.csproj' . | tr '\0' '\n' || true)
           for proj in "${sdk_projects[@]}"; do
             if grep -q '<IsTestProject>true</IsTestProject>' "$proj" 2>/dev/null || echo "$proj" | grep -qi 'test'; then
               echo "Testing $proj"
@@ -99,26 +99,19 @@ jobs:
       - name: Setup NuGet CLI
         uses: NuGet/setup-nuget@v1
 
-      - name: Setup MSBuild
-        uses: microsoft/setup-msbuild@v2
-
       - name: Restore packages.config packages (NuGet)
         run: |
-          $ErrorActionPreference = 'Stop'
-          $sln = (Get-ChildItem -Path . -Filter *.sln -Recurse | Select-Object -First 1).FullName
-          if (-not $sln) { throw "No solution file found." }
-          nuget restore $sln -PackagesDirectory .\packages -NonInteractive
+          nuget restore
 
-      - name: Build legacy non-SDK projects with MSBuild
+      - name: Restore & build all projects (including legacy)
         run: |
           $ErrorActionPreference = 'Stop'
-          $legacyProjects = Get-ChildItem -Recurse -Filter *.csproj | Where-Object {
-            -not (Select-String -Path $_.FullName -Pattern '<Project Sdk=' -Quiet)
-          } | Select-Object -ExpandProperty FullName
-
-          foreach ($p in $legacyProjects) {
-            Write-Host "Building legacy project $p"
-            msbuild $p /m /p:Configuration=Release /p:RestorePackages=false
+          $csprojs = Get-ChildItem -Recurse -Filter *.csproj | Select-Object -ExpandProperty FullName
+          foreach ($p in $csprojs) {
+            Write-Host "Restoring $p"
+            dotnet restore $p -p:Configuration=Release
+            Write-Host "Building $p"
+            dotnet build $p -c Release --no-restore
           }
 
       - name: Run tests (legacy/test projects)
