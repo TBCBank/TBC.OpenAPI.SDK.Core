@@ -45,6 +45,9 @@ jobs:
         nuget-version: latest
         nuget-api-key-source: 'https://api.nuget.org/v3/index.json'
 
+    - name: Restore packages.config packages
+      run: nuget restore
+
     - name: Restore
       run: dotnet restore -p:Configuration=Release
 
