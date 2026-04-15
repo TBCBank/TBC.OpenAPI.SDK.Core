@@ -31,7 +31,7 @@ on:
 
 jobs:
   build-sdk:
-    name: Build (SDK projects) — Ubuntu
+    name: Build (SDK projects) ï¿½ Ubuntu
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -43,7 +43,7 @@ jobs:
           fetch-depth: 1
 
       - name: Setup .NET SDK
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v5
         with:
           dotnet-version: 8.0.x
           include-prerelease: false
@@ -79,7 +79,7 @@ jobs:
           done
 
   build-legacy:
-    name: Build (Legacy .NET Framework) — Windows
+    name: Build (Legacy .NET Framework) ï¿½ Windows
     runs-on: windows-latest
     defaults:
       run:
@@ -91,7 +91,7 @@ jobs:
           fetch-depth: 1
 
       - name: Setup .NET SDK
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v5
         with:
           dotnet-version: 8.0.x
           include-prerelease: false
