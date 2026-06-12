@@ -2,7 +2,7 @@
 {
     public interface ITestClient : IOpenApiClient
     {
-
+        // test
     }
 
     public class TestClient : ITestClient
