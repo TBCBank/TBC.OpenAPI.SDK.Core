@@ -31,19 +31,19 @@ on:
 
 jobs:
   build-sdk:
-    name: Build (SDK projects) — Ubuntu
+    name: Build (SDK projects) - Ubuntu
     runs-on: ubuntu-latest
     defaults:
       run:
         shell: bash
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 1
 
       - name: Setup .NET SDK
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v6
         with:
           dotnet-version: 8.0.x
           include-prerelease: false
@@ -79,19 +79,19 @@ jobs:
           done
 
   build-legacy:
-    name: Build (Legacy .NET Framework) — Windows
+    name: Build (Legacy .NET Framework) - Windows
     runs-on: windows-latest
     defaults:
       run:
         shell: powershell
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 1
 
       - name: Setup .NET SDK
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v6
         with:
           dotnet-version: 8.0.x
           include-prerelease: false
