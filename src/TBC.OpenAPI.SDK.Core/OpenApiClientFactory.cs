@@ -48,6 +48,18 @@ namespace TBC.OpenAPI.SDK.Core
             return this;
         }
 
+        /// <summary>
+        /// Enables transparent OAuth client-credentials token acquisition and per-scope distributed
+        /// caching for <typeparamref name="TClient"/>. Call after the matching
+        /// <see cref="AddClient{TClientInterface,TClientImplementation,TOptions}"/>.
+        /// </summary>
+        public OpenApiClientFactoryBuilder AddOAuthTokenCaching<TClient>()
+            where TClient : class, IOpenApiClient
+        {
+            _serviceCollection.AddOAuthTokenCaching<TClient>();
+            return this;
+        }
+
         public OpenApiClientFactory Build()
         {
             _serviceProvider ??= _serviceCollection.BuildServiceProvider();

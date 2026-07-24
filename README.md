@@ -158,3 +158,98 @@ public async Task<ActionResult<SomeObject>> GetSomeObject(CancellationToken canc
   "name": "Leanne Graham"
 }
 ```
+
+## Token Caching (OAuth client credentials)
+
+The Core library can transparently acquire and cache OAuth access tokens using the
+`client_credentials` grant. Once enabled, tokens are requested on demand, cached per
+scope in an `IDistributedCache`, attached to outgoing requests as an
+`Authorization: Bearer` header, and automatically refreshed when the server responds
+with `401 Unauthorized`.
+
+The whole flow is handled by an `HttpClient` message handler
+(`OAuthDelegatingHandler<TClient>`), so your client code does not have to fetch, store,
+or renew tokens itself.
+
+### Enable token caching
+
+Call `AddOAuthTokenCaching<TClient>` **after** registering the client with
+`AddOpenApiClient` / `AddExampleClient`. Register it once per client.
+
+Program.cs
+```c#
+builder.Services
+    .AddExampleClient(builder.Configuration.GetSection("ExampleClient").Get<ExampleClientOptions>())
+    .AddOAuthTokenCaching<IExampleClient>();
+```
+
+If no `IDistributedCache` is registered, an in-memory distributed cache is registered
+automatically as a fallback. To use a shared cache (e.g. Redis or SQL Server), register
+it **before** calling `AddOAuthTokenCaching` and it will be used instead:
+
+```c#
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = "localhost:6379";
+});
+
+builder.Services
+    .AddExampleClient(builder.Configuration.GetSection("ExampleClient").Get<ExampleClientOptions>())
+    .AddOAuthTokenCaching<IExampleClient>();
+```
+
+When you build clients through `OpenApiClientFactoryBuilder`, an equivalent builder
+method is available:
+
+```c#
+var factory = new OpenApiClientFactoryBuilder()
+    .AddExampleClient(options)
+    .AddOAuthTokenCaching<IExampleClient>()
+    .Build();
+```
+
+### Sending a scoped request
+
+The scope is supplied per request through the `X-TBC-OAuth-Scope` marker header
+(`OAuthConstants.ScopeHeaderName`). The handler reads and removes that header, resolves a
+token for the scope, and injects the `Authorization: Bearer <token>` header. Requests
+that do not carry the marker header are passed through untouched (for example the token
+endpoint call itself), which prevents recursion.
+
+```c#
+public async Task<SomeObject> GetSomeObjectAsync(CancellationToken cancellationToken = default)
+{
+    var headers = new HeaderParamCollection
+    {
+        [OAuthConstants.ScopeHeaderName] = "read:some-object"
+    };
+
+    var result = await _http.GetJsonAsync<SomeObject>("/", query: null, headers, cancellationToken).ConfigureAwait(false);
+
+    if (!result.IsSuccess)
+        throw new OpenApiException(result.Problem?.Title ?? "Unexpected error occurred", result.Exception);
+
+    return result.Data!;
+}
+```
+
+### How it works
+
+1. The outgoing request carries the `X-TBC-OAuth-Scope` header with the required scope.
+2. `OAuthDelegatingHandler<TClient>` extracts and removes that header.
+3. A cached token for the scope is looked up in the `IDistributedCache`. If none exists,
+   a new token is requested via `POST oauth/token` using `grant_type=client_credentials`
+   and the given scope, then cached.
+4. The `Authorization: Bearer <access_token>` header is added and the request is sent.
+5. If the response is `401 Unauthorized`, the cached token is invalidated so the next
+   request obtains a fresh one.
+
+### Cache behavior
+
+* **Cache key** — composed as `TbcOpenApiOAuthToken:{ClientTypeName}:{scope}`, so tokens
+  are isolated per client type and per scope.
+* **Lifetime** — a token is cached for its `expires_in` value minus a 30-second grace
+  period (`OAuthConstants.TokenTimeoutGracePeriodSec`), with a minimum of 30 seconds
+  (`OAuthConstants.MinCacheTtlSec`). Tokens without an `expires_in` value use the minimum.
+* **Concurrency** — concurrent requests for the same scope are de-duplicated so only a
+  single token request is made while the others await the same result.
