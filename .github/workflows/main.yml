@@ -97,7 +97,7 @@ jobs:
           include-prerelease: false
 
       - name: Setup NuGet CLI
-        uses: NuGet/setup-nuget@v1
+        uses: NuGet/setup-nuget@v4
 
       - name: Restore packages.config packages (NuGet)
         run: |
