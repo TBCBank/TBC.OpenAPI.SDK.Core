@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using TBC.OpenAPI.SDK.Core.Authentication;
 using TBC.OpenAPI.SDK.Core.Extensions;
 
 namespace TBC.OpenAPI.SDK.Core
@@ -49,15 +50,22 @@ namespace TBC.OpenAPI.SDK.Core
         }
 
         /// <summary>
-        /// Enables transparent OAuth client-credentials token acquisition and per-scope distributed
-        /// caching for <typeparamref name="TClient"/>. Call after the matching
-        /// <see cref="AddClient{TClientInterface,TClientImplementation,TOptions}"/>.
+        /// Enables transparent OAuth client-credentials token acquisition and per-scope caching for
+        /// <typeparamref name="TClient"/>. Call after the matching
+        /// <see cref="AddClient{TClientInterface,TClientImplementation,TOptions}"/>, then select a
+        /// cache on the returned builder with exactly one of
+        /// <see cref="OpenApiClientOAuthTokenCachingBuilder{TClient}.UseInMemoryCache"/>,
+        /// <see cref="OpenApiClientOAuthTokenCachingBuilder{TClient}.UseRegisteredDistributedCache"/> or
+        /// <see cref="OpenApiClientOAuthTokenCachingBuilder{TClient}.UseDistributedCache(Microsoft.Extensions.Caching.Distributed.IDistributedCache)"/>.
+        /// There is no implicit fallback: until a cache is selected, resolving the client throws an
+        /// error naming the available options.
         /// </summary>
-        public OpenApiClientFactoryBuilder AddOAuthTokenCaching<TClient>()
+        /// <returns>A builder used to select where access tokens are cached.</returns>
+        public OpenApiClientOAuthTokenCachingBuilder<TClient> AddOAuthTokenCaching<TClient>()
             where TClient : class, IOpenApiClient
         {
             _serviceCollection.AddOAuthTokenCaching<TClient>();
-            return this;
+            return new OpenApiClientOAuthTokenCachingBuilder<TClient>(_serviceCollection, this);
         }
 
         public OpenApiClientFactory Build()

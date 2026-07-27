@@ -45,18 +45,23 @@ namespace TBC.OpenAPI.SDK.Core.Extensions
         }
 
         /// <summary>
-        /// Enables transparent OAuth client-credentials token acquisition and per-scope distributed
-        /// caching for <typeparamref name="TClient"/>. Callers convey the scope per request through
-        /// the <see cref="OAuthConstants.ScopeHeaderName"/> marker header; the registered
+        /// Enables transparent OAuth client-credentials token acquisition and per-scope caching for
+        /// <typeparamref name="TClient"/>. Callers convey the scope per request through the
+        /// <see cref="OAuthConstants.ScopeHeaderName"/> marker header; the registered
         /// <see cref="OAuthDelegatingHandler{TClient}"/> exchanges it for an
         /// <c>Authorization: Bearer</c> header and handles <c>401</c> refresh.
         /// <para>
         /// Call this after <see cref="AddOpenApiClient{TClientInterface,TClientImplementation,TOptions}"/>
-        /// for the same client. If no <see cref="Microsoft.Extensions.Caching.Distributed.IDistributedCache"/>
-        /// is registered, an in-memory distributed cache is registered as a fallback.
+        /// for the same client, then select a cache on the returned builder with exactly one of
+        /// <see cref="OAuthTokenCachingBuilder{TClient}.UseInMemoryCache"/>,
+        /// <see cref="OAuthTokenCachingBuilder{TClient}.UseRegisteredDistributedCache"/> or
+        /// <see cref="OAuthTokenCachingBuilder{TClient}.UseDistributedCache(Microsoft.Extensions.Caching.Distributed.IDistributedCache)"/>.
+        /// No cache backend is registered on your behalf, and there is no implicit fallback: until a
+        /// cache is selected, resolving the client throws an error naming the available options.
         /// </para>
         /// </summary>
-        public static IServiceCollection AddOAuthTokenCaching<TClient>(this IServiceCollection services)
+        /// <returns>A builder used to select where access tokens are cached.</returns>
+        public static OAuthTokenCachingBuilder<TClient> AddOAuthTokenCaching<TClient>(this IServiceCollection services)
             where TClient : class, IOpenApiClient
         {
 #if NET
@@ -68,17 +73,15 @@ namespace TBC.OpenAPI.SDK.Core.Extensions
             }
 #endif
 
-            services.AddDistributedMemoryCache();
-
             services.TryAddSingleton(typeof(IOAuthTokenHelper<>), typeof(OAuthTokenHelper<>));
-            services.TryAddSingleton(typeof(IOAuthTokenCacheHelper<>), typeof(OAuthTokenCacheHelper<>));
+            OAuthTokenCachingRegistration.AddUnconfiguredCache<TClient>(services);
 
             services.TryAddTransient<OAuthDelegatingHandler<TClient>>();
 
             services.AddHttpClient(typeof(TClient).FullName!)
                 .AddHttpMessageHandler<OAuthDelegatingHandler<TClient>>();
 
-            return services;
+            return new OAuthTokenCachingBuilder<TClient>(services);
         }
     }
 }

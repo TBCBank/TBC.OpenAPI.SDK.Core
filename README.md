@@ -174,18 +174,35 @@ or renew tokens itself.
 ### Enable token caching
 
 Call `AddOAuthTokenCaching<TClient>` **after** registering the client with
-`AddOpenApiClient` / `AddExampleClient`. Register it once per client.
+`AddOpenApiClient` / `AddExampleClient`, then **choose where tokens are cached**. The
+choice is not optional: `AddOAuthTokenCaching<TClient>` returns a builder and you must
+finish the chain with exactly one of the three terminal methods below.
+
+The SDK never registers a cache backend on your behalf and never touches your
+`IDistributedCache` registration. If you forget the terminal call, resolving the client
+throws an `InvalidOperationException` that names the available options — it will not
+silently fall back to a per-process cache.
+
+| Terminal call | Where tokens live | Use when |
+| --- | --- | --- |
+| `.UseInMemoryCache()` | A private in-memory cache owned by this SDK, per process | Single-instance apps, local development, tests |
+| `.UseRegisteredDistributedCache()` | The `IDistributedCache` registered in your container | You already configure Redis / SQL Server / etc. centrally |
+| `.UseDistributedCache(cache)`<br>`.UseDistributedCache(sp => ...)` | A cache instance you supply directly | You want a dedicated cache for tokens, separate from the app's |
 
 Program.cs
 ```c#
 builder.Services
     .AddExampleClient(builder.Configuration.GetSection("ExampleClient").Get<ExampleClientOptions>())
-    .AddOAuthTokenCaching<IExampleClient>();
+    .AddOAuthTokenCaching<IExampleClient>()
+        .UseInMemoryCache();
 ```
 
-If no `IDistributedCache` is registered, an in-memory distributed cache is registered
-automatically as a fallback. To use a shared cache (e.g. Redis or SQL Server), register
-it **before** calling `AddOAuthTokenCaching` and it will be used instead:
+> [!WARNING]
+> `.UseInMemoryCache()` is **per process and not shared**. In a multi-instance
+> deployment every instance keeps its own token cache and requests its own tokens. Pick
+> a distributed option if that is not acceptable.
+
+To reuse the `IDistributedCache` already registered in the container:
 
 ```c#
 builder.Services.AddStackExchangeRedisCache(options =>
@@ -195,17 +212,70 @@ builder.Services.AddStackExchangeRedisCache(options =>
 
 builder.Services
     .AddExampleClient(builder.Configuration.GetSection("ExampleClient").Get<ExampleClientOptions>())
-    .AddOAuthTokenCaching<IExampleClient>();
+    .AddOAuthTokenCaching<IExampleClient>()
+        .UseRegisteredDistributedCache();
 ```
 
-When you build clients through `OpenApiClientFactoryBuilder`, an equivalent builder
-method is available:
+Registration order no longer matters — the cache is resolved lazily, the first time a
+token is needed. If nothing is registered at that point, or if the registered
+implementation is `MemoryDistributedCache` (which `AddDistributedMemoryCache()`
+registers and which is *not* shared across instances), the call throws. That is
+deliberate: if you want a per-process cache, say so explicitly with
+`.UseInMemoryCache()`.
+
+To hand the SDK a cache instance directly, without registering it in the container:
+
+```c#
+builder.Services
+    .AddExampleClient(options)
+    .AddOAuthTokenCaching<IExampleClient>()
+        .UseDistributedCache(myTokenCache);
+
+// or resolved lazily from the container
+builder.Services
+    .AddExampleClient(options)
+    .AddOAuthTokenCaching<IExampleClient>()
+        .UseDistributedCache(sp => sp.GetRequiredKeyedService<IDistributedCache>("tokens"));
+```
+
+The cache choice is made **per client**, so different clients can use different
+backends.
+
+When you build clients through `OpenApiClientFactoryBuilder`, the same terminal methods
+are available and return the factory builder so the chain continues:
 
 ```c#
 var factory = new OpenApiClientFactoryBuilder()
     .AddExampleClient(options)
     .AddOAuthTokenCaching<IExampleClient>()
+        .UseInMemoryCache()
     .Build();
+```
+
+### Migrating from 3.x
+
+`AddOAuthTokenCaching<TClient>()` used to register an in-memory distributed cache as a
+fallback when no `IDistributedCache` was present. That made the caching topology depend
+on registration order and could silently give multi-instance deployments non-shared
+caches. It no longer does anything of the sort.
+
+Existing code stops compiling until a terminal call is added — the fix is mechanical:
+
+```diff
+  builder.Services
+      .AddExampleClient(options)
+-     .AddOAuthTokenCaching<IExampleClient>();
++     .AddOAuthTokenCaching<IExampleClient>()
++         .UseInMemoryCache();          // previous behaviour without a registered IDistributedCache
+```
+
+```diff
+  builder.Services.AddStackExchangeRedisCache(o => o.Configuration = "localhost:6379");
+  builder.Services
+      .AddExampleClient(options)
+-     .AddOAuthTokenCaching<IExampleClient>();
++     .AddOAuthTokenCaching<IExampleClient>()
++         .UseRegisteredDistributedCache();   // previous behaviour with a registered IDistributedCache
 ```
 
 ### Sending a scoped request
