@@ -3,7 +3,7 @@ using TBC.OpenAPI.SDK.Core.Models;
 
 namespace TBC.OpenAPI.SDK.Core.Authentication
 {
-    public sealed class OAuthTokenHelper<TClient> : IOAuthTokenHelper<TClient>
+    internal sealed class OAuthTokenHelper<TClient> : IOAuthTokenHelper<TClient>
         where TClient : class, IOpenApiClient
     {
         private readonly IHttpHelper<TClient> _http;

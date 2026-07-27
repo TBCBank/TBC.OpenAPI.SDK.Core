@@ -9,7 +9,7 @@ namespace TBC.OpenAPI.SDK.Core
     /// duplicate one.
     /// </summary>
     /// <typeparam name="TResult">The type produced by the coalesced operation.</typeparam>
-    public sealed class SingleFlightExecutor<TResult>
+    internal sealed class SingleFlightExecutor<TResult>
     {
         private readonly ConcurrentDictionary<string, Lazy<Task<TResult>>> _pending
             = new ConcurrentDictionary<string, Lazy<Task<TResult>>>(StringComparer.Ordinal);

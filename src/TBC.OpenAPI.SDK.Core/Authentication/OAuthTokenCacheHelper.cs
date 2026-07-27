@@ -3,7 +3,7 @@ using TBC.OpenAPI.SDK.Core.Exceptions;
 
 namespace TBC.OpenAPI.SDK.Core.Authentication
 {
-    public sealed class OAuthTokenCacheHelper<TClient> : IOAuthTokenCacheHelper<TClient>
+    internal sealed class OAuthTokenCacheHelper<TClient> : IOAuthTokenCacheHelper<TClient>
         where TClient : class, IOpenApiClient
     {
         private readonly SingleFlightExecutor<OAuthTokenResponse> _singleFlight

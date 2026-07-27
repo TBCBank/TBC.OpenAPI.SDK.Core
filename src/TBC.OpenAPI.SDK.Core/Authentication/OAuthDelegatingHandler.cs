@@ -20,7 +20,7 @@ namespace TBC.OpenAPI.SDK.Core.Authentication
     /// <see cref="HttpClient"/> pipeline.
     /// </para>
     /// </summary>
-    public sealed class OAuthDelegatingHandler<TClient> : DelegatingHandler
+    internal sealed class OAuthDelegatingHandler<TClient> : DelegatingHandler
         where TClient : class, IOpenApiClient
     {
         private readonly IOAuthTokenCacheHelper<TClient> _tokenCacheHelper;

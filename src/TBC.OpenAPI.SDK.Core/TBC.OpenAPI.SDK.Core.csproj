@@ -26,6 +26,10 @@
 		<AnalysisLevel>latest-all</AnalysisLevel>
 	</PropertyGroup>
 
+	<ItemGroup>
+		<InternalsVisibleTo Include="TBC.OpenAPI.SDK.Core.Tests" />
+	</ItemGroup>
+
 	<PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
