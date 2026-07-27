@@ -59,8 +59,21 @@ namespace TBC.OpenAPI.SDK.Core
         /// <see cref="OpenApiClientOAuthTokenCachingBuilder{TClient}.UseDistributedCache(Microsoft.Extensions.Caching.Distributed.IDistributedCache)"/>.
         /// There is no implicit fallback: until a cache is selected, resolving the client throws an
         /// error naming the available options.
+        /// <para>
+        /// <typeparamref name="TClient"/> must be the <em>implementation</em> type of the client -
+        /// the same type argument the client passes to <see cref="IHttpHelper{TClient}"/>. Passing
+        /// the client interface throws.
+        /// </para>
+        /// <para>
+        /// There is no token refresh: a <c>401 Unauthorized</c> response evicts the cached token and
+        /// is returned to the caller unchanged. The request that hit the <c>401</c> is not retried.
+        /// </para>
         /// </summary>
         /// <returns>A builder used to select where access tokens are cached.</returns>
+        /// <exception cref="InvalidOperationException">
+        /// <typeparamref name="TClient"/> is the interface of a registered client instead of its
+        /// implementation type.
+        /// </exception>
         public OpenApiClientOAuthTokenCachingBuilder<TClient> AddOAuthTokenCaching<TClient>()
             where TClient : class, IOpenApiClient
         {

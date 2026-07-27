@@ -49,7 +49,20 @@ namespace TBC.OpenAPI.SDK.Core.Extensions
         /// <typeparamref name="TClient"/>. Callers convey the scope per request through the
         /// <see cref="OAuthConstants.ScopeHeaderName"/> marker header; the registered
         /// <see cref="OAuthDelegatingHandler{TClient}"/> exchanges it for an
-        /// <c>Authorization: Bearer</c> header and handles <c>401</c> refresh.
+        /// <c>Authorization: Bearer</c> header.
+        /// <para>
+        /// <typeparamref name="TClient"/> must be the <em>implementation</em> type of the client -
+        /// the same type argument the client passes to <see cref="IHttpHelper{TClient}"/> - because
+        /// that is the named <see cref="HttpClient"/>
+        /// <see cref="AddOpenApiClient{TClientInterface,TClientImplementation,TOptions}"/> configures.
+        /// Passing the client interface throws.
+        /// </para>
+        /// <para>
+        /// There is no token refresh: a <c>401 Unauthorized</c> response evicts the cached token and
+        /// is returned to the caller unchanged. The request that hit the <c>401</c> is not retried;
+        /// the next request for that scope acquires a fresh token. Tokens are otherwise renewed only
+        /// when they expire out of the cache.
+        /// </para>
         /// <para>
         /// Call this after <see cref="AddOpenApiClient{TClientInterface,TClientImplementation,TOptions}"/>
         /// for the same client, then select a cache on the returned builder with exactly one of
@@ -61,6 +74,9 @@ namespace TBC.OpenAPI.SDK.Core.Extensions
         /// </para>
         /// </summary>
         /// <returns>A builder used to select where access tokens are cached.</returns>
+        /// <exception cref="InvalidOperationException">
+        /// <typeparamref name="TClient"/> is an interface rather than a client implementation type.
+        /// </exception>
         public static OAuthTokenCachingBuilder<TClient> AddOAuthTokenCaching<TClient>(this IServiceCollection services)
             where TClient : class, IOpenApiClient
         {
@@ -72,6 +88,8 @@ namespace TBC.OpenAPI.SDK.Core.Extensions
                 throw new ArgumentNullException(nameof(services));
             }
 #endif
+
+            OAuthTokenCachingRegistration.ValidateClientTypeArgument<TClient>();
 
             services.TryAddSingleton(typeof(IOAuthTokenHelper<>), typeof(OAuthTokenHelper<>));
             OAuthTokenCachingRegistration.AddUnconfiguredCache<TClient>(services);

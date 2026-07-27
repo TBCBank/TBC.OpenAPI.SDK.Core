@@ -15,6 +15,11 @@ namespace TBC.OpenAPI.SDK.Core.Authentication
     /// request regenerates it.
     /// </para>
     /// <para>
+    /// The handler does not retry: the <see cref="HttpStatusCode.Unauthorized"/> response is
+    /// returned to the caller unchanged, and only the following request for that scope benefits
+    /// from the eviction. Retry and backoff are the caller's responsibility.
+    /// </para>
+    /// <para>
     /// Requests without the marker header (for example the token endpoint call itself) are passed
     /// through untouched, which prevents recursion when the token endpoint shares the same
     /// <see cref="HttpClient"/> pipeline.

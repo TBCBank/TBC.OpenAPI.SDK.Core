@@ -25,11 +25,11 @@ namespace TBC.OpenAPI.SDK.Core.Tests
         {
             // Arrange
             var services = CreateServices();
-            services.AddOAuthTokenCaching<ITestClient>();
+            services.AddOAuthTokenCaching<TestClient>();
             using var provider = services.BuildServiceProvider();
 
             // Act
-            Action act = () => provider.GetRequiredService<IOAuthTokenCacheHelper<ITestClient>>();
+            Action act = () => provider.GetRequiredService<IOAuthTokenCacheHelper<TestClient>>();
 
             // Assert
             using (new AssertionScope())
@@ -39,7 +39,7 @@ namespace TBC.OpenAPI.SDK.Core.Tests
                 assertion.Which.Message.Should().Contain("UseInMemoryCache()");
                 assertion.Which.Message.Should().Contain("UseRegisteredDistributedCache()");
                 assertion.Which.Message.Should().Contain("UseDistributedCache(");
-                assertion.Which.Message.Should().Contain(typeof(ITestClient).FullName);
+                assertion.Which.Message.Should().Contain(typeof(TestClient).FullName);
             }
         }
 
@@ -48,7 +48,7 @@ namespace TBC.OpenAPI.SDK.Core.Tests
         {
             // Arrange
             var services = CreateServices();
-            services.AddOAuthTokenCaching<ITestClient>().UseInMemoryCache();
+            services.AddOAuthTokenCaching<TestClient>().UseInMemoryCache();
             using var provider = services.BuildServiceProvider();
 
             // Act
@@ -66,9 +66,9 @@ namespace TBC.OpenAPI.SDK.Core.Tests
             tokenHelper
                 .Setup(x => x.RequestToken(Scope, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new OAuthTokenResponse { AccessToken = "token", ExpiresIn = 3600 });
-            services.AddOAuthTokenCaching<ITestClient>().UseInMemoryCache();
+            services.AddOAuthTokenCaching<TestClient>().UseInMemoryCache();
             using var provider = services.BuildServiceProvider();
-            var sut = provider.GetRequiredService<IOAuthTokenCacheHelper<ITestClient>>();
+            var sut = provider.GetRequiredService<IOAuthTokenCacheHelper<TestClient>>();
 
             // Act
             var first = await sut.GetTokenAsync(Scope, CancellationToken.None).WaitAsync(Timeout);
@@ -90,11 +90,11 @@ namespace TBC.OpenAPI.SDK.Core.Tests
         {
             // Arrange
             var services = CreateServices();
-            services.AddOAuthTokenCaching<ITestClient>().UseRegisteredDistributedCache();
+            services.AddOAuthTokenCaching<TestClient>().UseRegisteredDistributedCache();
             using var provider = services.BuildServiceProvider();
 
             // Act
-            Action act = () => provider.GetRequiredService<IOAuthTokenCacheHelper<ITestClient>>();
+            Action act = () => provider.GetRequiredService<IOAuthTokenCacheHelper<TestClient>>();
 
             // Assert
             act.Should().Throw<InvalidOperationException>()
@@ -107,11 +107,11 @@ namespace TBC.OpenAPI.SDK.Core.Tests
             // Arrange
             var services = CreateServices();
             services.AddDistributedMemoryCache();
-            services.AddOAuthTokenCaching<ITestClient>().UseRegisteredDistributedCache();
+            services.AddOAuthTokenCaching<TestClient>().UseRegisteredDistributedCache();
             using var provider = services.BuildServiceProvider();
 
             // Act
-            Action act = () => provider.GetRequiredService<IOAuthTokenCacheHelper<ITestClient>>();
+            Action act = () => provider.GetRequiredService<IOAuthTokenCacheHelper<TestClient>>();
 
             // Assert
             act.Should().Throw<InvalidOperationException>()
@@ -125,15 +125,15 @@ namespace TBC.OpenAPI.SDK.Core.Tests
             var cache = new RecordingDistributedCache();
             var services = CreateServices();
             services.AddSingleton<IDistributedCache>(cache);
-            services.AddOAuthTokenCaching<ITestClient>().UseRegisteredDistributedCache();
+            services.AddOAuthTokenCaching<TestClient>().UseRegisteredDistributedCache();
             using var provider = services.BuildServiceProvider();
-            var sut = provider.GetRequiredService<IOAuthTokenCacheHelper<ITestClient>>();
+            var sut = provider.GetRequiredService<IOAuthTokenCacheHelper<TestClient>>();
 
             // Act
             await sut.RemoveTokenAsync(Scope, CancellationToken.None).WaitAsync(Timeout);
 
             // Assert
-            cache.RemovedKeys.Should().ContainSingle().Which.Should().Be(GetCacheKey<ITestClient>(Scope));
+            cache.RemovedKeys.Should().ContainSingle().Which.Should().Be(GetCacheKey<TestClient>(Scope));
         }
 
         [Fact]
@@ -142,9 +142,9 @@ namespace TBC.OpenAPI.SDK.Core.Tests
             // Arrange
             var cache = new RecordingDistributedCache();
             var services = CreateServices();
-            services.AddOAuthTokenCaching<ITestClient>().UseDistributedCache(cache);
+            services.AddOAuthTokenCaching<TestClient>().UseDistributedCache(cache);
             using var provider = services.BuildServiceProvider();
-            var sut = provider.GetRequiredService<IOAuthTokenCacheHelper<ITestClient>>();
+            var sut = provider.GetRequiredService<IOAuthTokenCacheHelper<TestClient>>();
 
             // Act
             await sut.RemoveTokenAsync(Scope, CancellationToken.None).WaitAsync(Timeout);
@@ -152,7 +152,7 @@ namespace TBC.OpenAPI.SDK.Core.Tests
             // Assert
             using (new AssertionScope())
             {
-                cache.RemovedKeys.Should().ContainSingle().Which.Should().Be(GetCacheKey<ITestClient>(Scope));
+                cache.RemovedKeys.Should().ContainSingle().Which.Should().Be(GetCacheKey<TestClient>(Scope));
                 provider.GetService<IDistributedCache>().Should().BeNull();
             }
         }
@@ -164,23 +164,23 @@ namespace TBC.OpenAPI.SDK.Core.Tests
             var cache = new RecordingDistributedCache();
             var services = CreateServices();
             services.AddSingleton(cache);
-            services.AddOAuthTokenCaching<ITestClient>()
+            services.AddOAuthTokenCaching<TestClient>()
                 .UseDistributedCache(sp => sp.GetRequiredService<RecordingDistributedCache>());
             using var provider = services.BuildServiceProvider();
-            var sut = provider.GetRequiredService<IOAuthTokenCacheHelper<ITestClient>>();
+            var sut = provider.GetRequiredService<IOAuthTokenCacheHelper<TestClient>>();
 
             // Act
             await sut.RemoveTokenAsync(Scope, CancellationToken.None).WaitAsync(Timeout);
 
             // Assert
-            cache.RemovedKeys.Should().ContainSingle().Which.Should().Be(GetCacheKey<ITestClient>(Scope));
+            cache.RemovedKeys.Should().ContainSingle().Which.Should().Be(GetCacheKey<TestClient>(Scope));
         }
 
         [Fact]
         public void UseDistributedCache_WhenCacheIsNull_ShouldThrowArgumentNullException()
         {
             // Arrange
-            var builder = CreateServices().AddOAuthTokenCaching<ITestClient>();
+            var builder = CreateServices().AddOAuthTokenCaching<TestClient>();
 
             // Act
             Action act = () => builder.UseDistributedCache((IDistributedCache)null!);
@@ -193,7 +193,7 @@ namespace TBC.OpenAPI.SDK.Core.Tests
         public void UseDistributedCache_WhenFactoryIsNull_ShouldThrowArgumentNullException()
         {
             // Arrange
-            var builder = CreateServices().AddOAuthTokenCaching<ITestClient>();
+            var builder = CreateServices().AddOAuthTokenCaching<TestClient>();
 
             // Act
             Action act = () => builder.UseDistributedCache((Func<IServiceProvider, IDistributedCache>)null!);
@@ -207,11 +207,11 @@ namespace TBC.OpenAPI.SDK.Core.Tests
         {
             // Arrange
             var services = CreateServices();
-            services.AddOAuthTokenCaching<ITestClient>().UseDistributedCache(_ => null!);
+            services.AddOAuthTokenCaching<TestClient>().UseDistributedCache(_ => null!);
             using var provider = services.BuildServiceProvider();
 
             // Act
-            Action act = () => provider.GetRequiredService<IOAuthTokenCacheHelper<ITestClient>>();
+            Action act = () => provider.GetRequiredService<IOAuthTokenCacheHelper<TestClient>>();
 
             // Assert
             act.Should().Throw<InvalidOperationException>()
@@ -224,19 +224,19 @@ namespace TBC.OpenAPI.SDK.Core.Tests
             // Arrange
             var sharedCache = new RecordingDistributedCache();
             var services = CreateServices();
-            services.AddSingleton(Mock.Of<IOAuthTokenHelper<IOtherTestClient>>());
-            services.AddOAuthTokenCaching<ITestClient>().UseDistributedCache(sharedCache);
-            services.AddOAuthTokenCaching<IOtherTestClient>().UseInMemoryCache();
+            services.AddSingleton(Mock.Of<IOAuthTokenHelper<OtherTestClient>>());
+            services.AddOAuthTokenCaching<TestClient>().UseDistributedCache(sharedCache);
+            services.AddOAuthTokenCaching<OtherTestClient>().UseInMemoryCache();
             using var provider = services.BuildServiceProvider();
 
             // Act
-            await provider.GetRequiredService<IOAuthTokenCacheHelper<ITestClient>>()
+            await provider.GetRequiredService<IOAuthTokenCacheHelper<TestClient>>()
                 .RemoveTokenAsync(Scope, CancellationToken.None).WaitAsync(Timeout);
-            await provider.GetRequiredService<IOAuthTokenCacheHelper<IOtherTestClient>>()
+            await provider.GetRequiredService<IOAuthTokenCacheHelper<OtherTestClient>>()
                 .RemoveTokenAsync(Scope, CancellationToken.None).WaitAsync(Timeout);
 
             // Assert
-            sharedCache.RemovedKeys.Should().ContainSingle().Which.Should().Be(GetCacheKey<ITestClient>(Scope));
+            sharedCache.RemovedKeys.Should().ContainSingle().Which.Should().Be(GetCacheKey<TestClient>(Scope));
         }
 
         [Fact]
@@ -246,10 +246,10 @@ namespace TBC.OpenAPI.SDK.Core.Tests
             var first = new RecordingDistributedCache();
             var second = new RecordingDistributedCache();
             var services = CreateServices();
-            services.AddOAuthTokenCaching<ITestClient>().UseDistributedCache(first);
-            services.AddOAuthTokenCaching<ITestClient>().UseDistributedCache(second);
+            services.AddOAuthTokenCaching<TestClient>().UseDistributedCache(first);
+            services.AddOAuthTokenCaching<TestClient>().UseDistributedCache(second);
             using var provider = services.BuildServiceProvider();
-            var sut = provider.GetRequiredService<IOAuthTokenCacheHelper<ITestClient>>();
+            var sut = provider.GetRequiredService<IOAuthTokenCacheHelper<TestClient>>();
 
             // Act
             await sut.RemoveTokenAsync(Scope, CancellationToken.None).WaitAsync(Timeout);
@@ -269,7 +269,7 @@ namespace TBC.OpenAPI.SDK.Core.Tests
             var factoryBuilder = new OpenApiClientFactoryBuilder();
 
             // Act
-            var result = factoryBuilder.AddOAuthTokenCaching<ITestClient>().UseInMemoryCache();
+            var result = factoryBuilder.AddOAuthTokenCaching<TestClient>().UseInMemoryCache();
 
             // Assert
             result.Should().BeSameAs(factoryBuilder);
@@ -278,9 +278,9 @@ namespace TBC.OpenAPI.SDK.Core.Tests
         private static IServiceCollection CreateServices()
             => CreateServices(out _);
 
-        private static IServiceCollection CreateServices(out Mock<IOAuthTokenHelper<ITestClient>> tokenHelper)
+        private static IServiceCollection CreateServices(out Mock<IOAuthTokenHelper<TestClient>> tokenHelper)
         {
-            tokenHelper = new Mock<IOAuthTokenHelper<ITestClient>>();
+            tokenHelper = new Mock<IOAuthTokenHelper<TestClient>>();
 
             var services = new ServiceCollection();
             services.AddSingleton(tokenHelper.Object);
@@ -335,6 +335,10 @@ namespace TBC.OpenAPI.SDK.Core.Tests
     }
 
     public interface IOtherTestClient : IOpenApiClient
+    {
+    }
+
+    public class OtherTestClient : IOtherTestClient
     {
     }
 }

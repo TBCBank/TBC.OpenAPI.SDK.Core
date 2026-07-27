@@ -25,6 +25,23 @@ namespace TBC.OpenAPI.SDK.Core.Authentication
         }
 
         /// <summary>
+        /// Rejects an interface <typeparamref name="TClient"/>. Token caching attaches its handler to
+        /// the named <see cref="HttpClient"/> called <c>typeof(TClient).FullName</c>, and
+        /// <c>AddOpenApiClient</c> always configures that client under the implementation type - its
+        /// <c>TClientImplementation</c> parameter is constrained to a class. An interface therefore
+        /// attaches the handler to a client nothing resolves, and requests silently go out without an
+        /// <c>Authorization</c> header.
+        /// </summary>
+        public static void ValidateClientTypeArgument<TClient>()
+            where TClient : class, IOpenApiClient
+        {
+            if (typeof(TClient).IsInterface)
+            {
+                throw new InvalidOperationException(InterfaceTypeArgumentMessage<TClient>());
+            }
+        }
+
+        /// <summary>
         /// Points <typeparamref name="TClient"/> at a private in-memory cache owned by this SDK.
         /// Nothing is registered in the container under <see cref="IDistributedCache"/>.
         /// </summary>
@@ -105,6 +122,17 @@ namespace TBC.OpenAPI.SDK.Core.Authentication
                    "UseInMemoryCache() for a per-process cache, " +
                    "UseRegisteredDistributedCache() to use the IDistributedCache registered in the container, " +
                    "or UseDistributedCache(...) to supply one directly.";
+        }
+
+        private static string InterfaceTypeArgumentMessage<TClient>()
+            where TClient : class, IOpenApiClient
+        {
+            return $"AddOAuthTokenCaching<{typeof(TClient).Name}>() was called with the interface " +
+                   $"'{ClientName<TClient>()}'. Token caching attaches its handler to the named HttpClient of the " +
+                   "type argument, and AddOpenApiClient always configures that client under the implementation " +
+                   "type, so an interface attaches the handler to an HttpClient nothing resolves and requests go " +
+                   "out without an Authorization header. Pass the client implementation type instead - the same " +
+                   "type argument the client passes to IHttpHelper<T>.";
         }
 
         private static string NoRegisteredCacheMessage<TClient>()
