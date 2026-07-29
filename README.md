@@ -307,7 +307,55 @@ The handler **evicts, it does not refresh**: the failed request is not retried, 
 never uses the `refresh_token` grant (no refresh token is stored) and never renews
 proactively. The only protection against sending an about-to-expire token is the
 30-second grace period subtracted from `expires_in`, so treat a `401` as a normal failed
-response — retry and backoff are the caller's responsibility.
+response.
+
+Retry and backoff are the caller's responsibility — Core ships no retry logic and takes no dependency on Polly or any resilience library. It does, however, give you the hook needed to turn that eviction into a retry that actually recovers; see [Retrying on 401](#retrying-on-401).
+
+### Retrying on 401
+
+Because the handler evicts the token on a `401` but only the *next* request for that scope picks up a fresh one, a retry only recovers if it **re-enters the OAuth handler** after the eviction. That means the retry has to sit *outside* `OAuthDelegatingHandler<TClient>` in the `HttpClient` pipeline. `AddOAuthTokenCaching<TClient>` therefore takes an optional `Action<IHttpClientBuilder> configurePipeline` hook: any handler it registers is placed outside the OAuth handler, so a retried attempt re-enters token handling and, because the `401` already evicted the token, acquires a fresh one.
+
+Core supplies no retry implementation — you plug in whichever mechanism you prefer.
+
+> [!IMPORTANT]
+> A retry handler **must clone the request on every attempt**. The OAuth handler consumes the `X-TBC-OAuth-Scope` marker header, and the request content is consumed once it is sent, so re-sending the same `HttpRequestMessage` fails. `Microsoft.Extensions.Http.Resilience` clones automatically. Scope the retry to `401 Unauthorized` so genuinely failed requests are not re-issued.
+
+**With `Microsoft.Extensions.Http.Resilience` (Polly):**
+
+```c#
+using Microsoft.Extensions.Http.Resilience;
+using Polly;
+
+builder.Services
+    .AddOpenApiClient<IExampleClient, ExampleClient, ExampleClientOptions>(options)
+    .AddOAuthTokenCaching<ExampleClient>(configurePipeline: pipeline =>
+        pipeline.AddResilienceHandler("example-401-retry", b =>
+            b.AddRetry(new HttpRetryStrategyOptions
+            {
+                MaxRetryAttempts = 1,
+                ShouldHandle = args => ValueTask.FromResult(
+                    args.Outcome.Result?.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+            })))
+        .UseInMemoryCache();
+```
+
+The same `configurePipeline` parameter is available on the factory builder's
+`AddOAuthTokenCaching<TClient>`:
+
+```c#
+var factory = new OpenApiClientFactoryBuilder()
+    .AddClient<IExampleClient, ExampleClient, ExampleClientOptions>(options)
+    .AddOAuthTokenCaching<ExampleClient>(configurePipeline: pipeline =>
+        pipeline.AddResilienceHandler("example-401-retry", b =>
+            b.AddRetry(new HttpRetryStrategyOptions
+            {
+                MaxRetryAttempts = 1,
+                ShouldHandle = args => ValueTask.FromResult(
+                    args.Outcome.Result?.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+            })))
+        .UseInMemoryCache()
+    .Build();
+```
 
 ### Cache behavior
 

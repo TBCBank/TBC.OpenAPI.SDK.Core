@@ -64,6 +64,22 @@ namespace TBC.OpenAPI.SDK.Core.Extensions
         /// when they expire out of the cache.
         /// </para>
         /// <para>
+        /// To turn that eviction into an actual retry, supply <paramref name="configurePipeline"/>.
+        /// The <see cref="IHttpClientBuilder"/> it receives is the client's own pipeline, and any
+        /// handler it registers is placed <em>outside</em> the
+        /// <see cref="OAuthDelegatingHandler{TClient}"/> - the only position from which a retried
+        /// attempt re-enters token handling and, because the <c>401</c> already evicted the token,
+        /// acquires a fresh one. This SDK ships no retry logic and takes no dependency on any
+        /// resilience library; you plug in your own (for example
+        /// <c>Microsoft.Extensions.Http.Resilience</c>'s <c>AddResilienceHandler</c>, or a custom
+        /// <see cref="DelegatingHandler"/>). A retry handler <b>must clone the request per attempt</b>:
+        /// the scope marker header is consumed by <see cref="OAuthDelegatingHandler{TClient}"/> and
+        /// the request content is consumed when it is sent, so re-sending the same
+        /// <see cref="HttpRequestMessage"/> fails. <c>Microsoft.Extensions.Http.Resilience</c> clones
+        /// automatically; a custom handler must do so itself. Scope the retry to
+        /// <c>401 Unauthorized</c> responses to avoid re-issuing genuinely failed requests.
+        /// </para>
+        /// <para>
         /// Call this after <see cref="AddOpenApiClient{TClientInterface,TClientImplementation,TOptions}"/>
         /// for the same client, then select a cache on the returned builder with exactly one of
         /// <see cref="OAuthTokenCachingBuilder{TClient}.UseInMemoryCache"/>,
@@ -73,11 +89,20 @@ namespace TBC.OpenAPI.SDK.Core.Extensions
         /// cache is selected, resolving the client throws an error naming the available options.
         /// </para>
         /// </summary>
+        /// <param name="services">The service collection to register the token handling into.</param>
+        /// <param name="configurePipeline">
+        /// Optional hook that configures the client's HTTP pipeline. Handlers it registers are placed
+        /// outside the OAuth handler, which is where a retry has to sit to benefit from the token
+        /// eviction a <c>401</c> triggers. When <see langword="null"/> the behaviour is unchanged: a
+        /// <c>401</c> evicts the token and is returned to the caller without a retry.
+        /// </param>
         /// <returns>A builder used to select where access tokens are cached.</returns>
         /// <exception cref="InvalidOperationException">
         /// <typeparamref name="TClient"/> is an interface rather than a client implementation type.
         /// </exception>
-        public static OAuthTokenCachingBuilder<TClient> AddOAuthTokenCaching<TClient>(this IServiceCollection services)
+        public static OAuthTokenCachingBuilder<TClient> AddOAuthTokenCaching<TClient>(
+            this IServiceCollection services,
+            Action<IHttpClientBuilder>? configurePipeline = null)
             where TClient : class, IOpenApiClient
         {
 #if NET
@@ -96,8 +121,16 @@ namespace TBC.OpenAPI.SDK.Core.Extensions
 
             services.TryAddTransient<OAuthDelegatingHandler<TClient>>();
 
-            services.AddHttpClient(typeof(TClient).FullName!)
-                .AddHttpMessageHandler<OAuthDelegatingHandler<TClient>>();
+            var httpClientBuilder = services.AddHttpClient(typeof(TClient).FullName!);
+
+            // Handlers are nested in registration order, outermost first. Registering the caller's
+            // pipeline before the OAuth handler puts any retry it adds outside token handling, so a
+            // retried attempt re-enters the OAuth handler and picks up a token freshly acquired after
+            // the 401 eviction. Registering it afterwards would trap the retry inside the OAuth
+            // handler, where the bearer is already set and no re-acquisition happens.
+            configurePipeline?.Invoke(httpClientBuilder);
+
+            httpClientBuilder.AddHttpMessageHandler<OAuthDelegatingHandler<TClient>>();
 
             return new OAuthTokenCachingBuilder<TClient>(services);
         }

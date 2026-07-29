@@ -67,17 +67,29 @@ namespace TBC.OpenAPI.SDK.Core
         /// <para>
         /// There is no token refresh: a <c>401 Unauthorized</c> response evicts the cached token and
         /// is returned to the caller unchanged. The request that hit the <c>401</c> is not retried.
+        /// Supply <paramref name="configurePipeline"/> to turn that eviction into a retry: any handler
+        /// it registers is placed outside the <see cref="Authentication.OAuthDelegatingHandler{TClient}"/>,
+        /// the only position from which a retried attempt re-enters token handling and acquires a fresh
+        /// token. This SDK ships no retry logic and depends on no resilience library; a retry handler
+        /// must clone the request per attempt (the scope marker header and the request content are
+        /// consumed when the request is sent).
         /// </para>
         /// </summary>
+        /// <param name="configurePipeline">
+        /// Optional hook that configures the client's HTTP pipeline. Handlers it registers are placed
+        /// outside the OAuth handler, which is where a retry has to sit to benefit from the token
+        /// eviction a <c>401</c> triggers. When <see langword="null"/> the behaviour is unchanged.
+        /// </param>
         /// <returns>A builder used to select where access tokens are cached.</returns>
         /// <exception cref="InvalidOperationException">
         /// <typeparamref name="TClient"/> is the interface of a registered client instead of its
         /// implementation type.
         /// </exception>
-        public OpenApiClientOAuthTokenCachingBuilder<TClient> AddOAuthTokenCaching<TClient>()
+        public OpenApiClientOAuthTokenCachingBuilder<TClient> AddOAuthTokenCaching<TClient>(
+            Action<IHttpClientBuilder>? configurePipeline = null)
             where TClient : class, IOpenApiClient
         {
-            _serviceCollection.AddOAuthTokenCaching<TClient>();
+            _serviceCollection.AddOAuthTokenCaching<TClient>(configurePipeline);
             return new OpenApiClientOAuthTokenCachingBuilder<TClient>(_serviceCollection, this);
         }
 
