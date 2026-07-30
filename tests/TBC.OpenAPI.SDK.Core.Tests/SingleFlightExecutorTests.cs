@@ -48,11 +48,9 @@ namespace TBC.OpenAPI.SDK.Core.Tests
 
             var callers = Enumerable
                 .Range(0, 50)
-                .Select(_ => Task.Run(() => sut.ExecuteAsync(Key, factory, CancellationToken.None)))
+                .Select(_ => sut.ExecuteAsync(Key, factory, CancellationToken.None))
                 .ToArray();
 
-            // Give every caller time to subscribe to the single in-flight execution, then release it.
-            await Task.Delay(100);
             gate.SetResult(true);
 
             var results = await Task.WhenAll(callers).WaitAsync(Timeout);
