@@ -78,7 +78,7 @@
 
 	<!-- Shared across all TFMs -->
 	<ItemGroup Condition=" '$(Configuration)' == 'Release' ">
-		<PackageReference Include="MinVer" Version="7.0.*">
+		<PackageReference Include="MinVer" Version="8.0.*">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
